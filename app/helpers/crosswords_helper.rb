@@ -1,0 +1,2 @@
+module CrosswordsHelper
+end

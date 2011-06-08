@@ -1,0 +1,23 @@
+defaults: &defaults
+  host: localhost
+  # slaves:
+  #   - host: slave1.local
+  #     port: 27018
+  #   - host: slave2.local
+  #     port: 27019
+
+development:
+  <<: *defaults
+  database: crosswords_development
+
+test:
+  <<: *defaults
+  database: crosswords_test
+
+# set these environment variables on your prod server
+production:
+  uri: <%= ENV['MONGOHQ_URL'] %>
+
+staging:
+  <<: *defaults
+  database: crosswords_development

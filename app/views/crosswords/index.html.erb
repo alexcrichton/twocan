@@ -1,0 +1,23 @@
+<h1>Listing crosswords</h1>
+
+<table>
+  <tr>
+    <th>Binary file</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @crosswords.each do |crossword| %>
+  <tr>
+    <td><%= crossword.binary_file %></td>
+    <td><%= link_to 'Show', crossword %></td>
+    <td><%= link_to 'Edit', edit_crossword_path(crossword) %></td>
+    <td><%= link_to 'Destroy', crossword, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Crossword', new_crossword_path %>
