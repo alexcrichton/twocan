@@ -1,7 +1,4 @@
 class Crossword
-  attr_accessor :width, :height, :solution, :progress, :title, :author,
-    :copyright, :clues, :sections, :notes
-
   class ParseError < StandardError; end
   class ChecksumError < StandardError; end
   class CompatibilityError < StandardError; end
@@ -9,6 +6,14 @@ class Crossword
   class Grid
     def initialize crossword
       @crossword = crossword
+    end
+
+    def parse! io
+      @grid_string = io.read(@crossword.width * @crossword.height)
+    end
+
+    def to_s
+      @grid_string
     end
   end
 
@@ -28,6 +33,10 @@ class Crossword
   end
 
   class Parser
+    NUL = "\x00".freeze
+    attr_accessor :width, :height, :solution, :progress, :title, :author,
+      :copyright, :clues, :sections, :notes
+
     # Parse the given IO stream. For the specifics on the format of a crossword,
     # see http://code.google.com/p/puz/wiki/FileFormat
     # 
@@ -40,6 +49,7 @@ class Crossword
     #     supported yet by this class
     def parse! io
       io = StringIO.new(io) if io.is_a?(String)
+      io = io.binmode unless io.binmode?
 
       @cksum    = io.read(0x2).unpack('v').first
       magic     = io.read(0xc).unpack('Z11').first
@@ -61,34 +71,25 @@ class Crossword
       _garbage   = io.read(0x2)
       @scrambled = io.read(0x2).unpack('v').first
 
-      solution = Grid.new(self) { |g| g.parse! io }
-      progress = Grid.new(self) { |g| g.parse! io }
+      @solution = Grid.new(self).tap { |g| g.parse! io }
+      @progress = Grid.new(self).tap { |g| g.parse! io }
 
       io.set_encoding('iso-8859-1')
-      @title     = io.readline("\x00").chomp("\x00")
-      @author    = io.readline("\x00").chomp("\x00")
-      @copyright = io.readline("\x00").chomp("\x00")
+      @title     = io.readline(NUL).chomp(NUL)
+      @author    = io.readline(NUL).chomp(NUL)
+      @copyright = io.readline(NUL).chomp(NUL)
 
       @clues = []
-      num_clues.times { @clues << io.readline("\x00").chomp("\x00") }
-      @notes = io.readline("\x00").chomp("\x00")
+      num_clues.times { @clues << io.readline(NUL).chomp(NUL) }
+      @notes = io.readline(NUL).chomp(NUL)
 
       @sections = []
       @sections << Section.parse!(io) while !io.eof?
 
       validate io
-
-      self[:width]  = @width
-      self[:height] = @height
-      self[:solution] = solution.to_s
-      self[:clues] = @clues.map{ |c| c.encode('utf-8') }
     end
 
     protected
-
-    def parse_saved_data
-      parse! binary_file if binary_file.present?
-    end
 
     # Validates checksums of an IO. Assumes #parse! has been previously called.
     # For the details on the checksums, see the same website mentioned in
@@ -113,7 +114,7 @@ class Crossword
         raise ParseError if io.getbyte != 0
       }
 
-      io.readline("\x00") # skip note
+      io.readline(NUL) # skip note
 
       raise ChecksumError if ck != @cksum
 

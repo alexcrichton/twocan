@@ -1,10 +1,23 @@
-<p id="notice"><%= notice %></p>
+<dl>
+  <dt>Title</dt>
+  <dd><%= @crossword.title %></dd>
+  <dt>Author</dt>
+  <dd><%= @crossword.author %></dd>
+  <dt>Copyright</dt>
+  <dd><%= @crossword.copyright %></dd>
+  <dt>Width</dt>
+  <dd><%= @crossword.width %></dd>
+  <dt>Height</dt>
+  <dd><%= @crossword.height %></dd>
+  <dt>Solution</dt>
+  <dd><%= @crossword.solution %></dd>
+</dl>
 
-<p>
-  <b>Binary file:</b>
-  <%= @crossword.binary_file %>
-</p>
+<ul>
+  <% @crossword.clues.each do |c| %>
+    <li><%= c %></li>
+  <% end %>
+</ul>
 
-
-<%= link_to 'Edit', edit_crossword_path(@crossword) %> |
+<%= link_to 'Edit', [:edit, @crossword] %> |
 <%= link_to 'Back', crosswords_path %>

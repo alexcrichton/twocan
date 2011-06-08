@@ -1,6 +1,10 @@
 class Crossword
   include Mongoid::Document
 
+  field :title
+  field :author
+  field :copyright
+  field :notes
   field :binary_data, :type => BSON::Binary 
   field :width, :type => Integer
   field :height, :type => Integer
@@ -16,22 +20,22 @@ class Crossword
     return unless @binary_file.present?
     self[:binary_data] = nil
 
-    data = @binary_file.open.binmode.read
-    p data
-    parser = Parser.new.tap{ |p| p.parse! data }
+    file   = @binary_file.open
+    parser = Parser.new.tap{ |p| p.parse! file.binmode }
 
-    self[:width]    = parser.width
-    self[:height]   = parser.height
-    self[:clues]    = parser.clues.map{ |c| c.encode('utf-8') }
-    self[:solution] = parser.solution
+    self[:title]     = parser.title
+    self[:author]    = parser.author
+    self[:copyright] = parser.copyright
+    self[:notes]     = parser.notes
+    self[:width]     = parser.width
+    self[:height]    = parser.height
+    self[:clues]     = parser.clues.map{ |c| c.encode('utf-8') }
+    self[:solution]  = parser.solution.to_s
 
-    @binary_file.rewind
-    self[:binary_data] = @binary_file.read
+    file.rewind
+    self[:binary_data] = file.read
   rescue ParseError, ChecksumError, CompatibilityError => e
-    puts e.message
-    puts e.backtrace
     errors[:binary_file] << 'is an invalid crossword file.'
-    p errors
   end
 
   def to_puz
