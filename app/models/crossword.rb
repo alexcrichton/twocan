@@ -34,4 +34,8 @@ class Crossword
     p errors
   end
 
+  def to_puz
+    raise 'Not implemented yet!'
+  end
+
 end
