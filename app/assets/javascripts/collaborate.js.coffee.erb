@@ -29,10 +29,10 @@ jQuery ->
     return if data.socket_id == pusher.socket_id
     row = parseInt(data.row, 10)
     col = parseInt(data.col, 10)
-    window.crossword.grid[row][col].val(data.letter)
+    window.crossword.insert_character data.letter, row, col, false
 
   channel.bind 'remove-letter', (data) ->
     return if data.socket_id == pusher.socket_id
     row = parseInt(data.row, 10)
     col = parseInt(data.col, 10)
-    window.crossword.grid[row][col].val('')
+    window.crossword.backspace row, col, false

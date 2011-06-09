@@ -45,21 +45,31 @@ class Crossword
     # that would have to be dealt with otherwise
     false
 
-  insert_character: (character) ->
-    if @grid[@row][@col].val() != character
-      @grid[@row][@col].val(character)
-      @container.trigger 'crossword:new-letter',
-        row: @row
-        col: @col
-        letter: character
-      clues     = @get_clues()
+  # Insert a given character at the specified location. This is either called
+  # from a websocket handler or from the keyboard handler.
+  #
+  # @param [String] character the one character string that should be input
+  # @param [Integer] row the row to insert at (defaults to @row)
+  # @param [Integer] col the column to insert at (defaults to @col)
+  # @param [Boolean] local_event flag if this was a local event and extra
+  #   events should be triggered as a result
+  insert_character: (character, row = @row, col = @col, local_event = true) ->
+    if @grid[row][col].val() != character
+      @grid[row][col].val(character)
+      if local_event
+        @container.trigger 'crossword:new-letter',
+          row: @row
+          col: @col
+          letter: character
+      clues     = @get_clues(row, col)
       completed = {}
       completed.primary   = clues.primary   if @clue_finished clues.primary
       completed.secondary = clues.secondary if @clue_finished clues.secondary
       @container.trigger 'crossword:clue-solved', completed
 
-    # Move the cursor if we can
-    if @direction == 'across' then @next_cell 1, 0 else @next_cell 0, 1
+    # Move the cursor if we can (only local events)
+    if local_event
+      if @direction == 'across' then @next_cell 1, 0 else @next_cell 0, 1
 
   # Tests whether a clue has been completed (completely filled in)
   clue_finished: (clue) ->
@@ -80,17 +90,20 @@ class Crossword
 
   # Called whenver backspace is hit. This will delete the necessary characters
   # and call the necessary callbacks.
-  backspace: ->
-    if @grid[@row][@col].val() == ''
+  backspace: (row = @row, col = @col, local_event = true) ->
+    if local_event && @grid[row][col].val() == ''
       if @direction == 'across'
         @next_cell -1, 0
       else
         @next_cell 0, -1
+      row = @row
+      col = @col
 
-    if @grid[@row][@col].val() != ''
-      @grid[@row][@col].val('')
-      @container.trigger 'crossword:clue-unsolved', @get_clues()
-      @container.trigger 'crossword:remove-letter', row: @row, col: @col
+    if @grid[row][col].val() != ''
+      @grid[row][col].val('')
+      @container.trigger 'crossword:clue-unsolved', @get_clues(row, col)
+      if local_event
+        @container.trigger 'crossword:remove-letter', row: row, col: col
 
   # Tests whether a (row, col) combination point to a valid location in the
   # grid. A valid location is within bounds and also not a black square
@@ -157,13 +170,13 @@ class Crossword
   # columnt. The object returned has a 'primary' and 'secondary' key where the
   # 'primary' key is the clue in the same direction as is currently working and
   # the secondary is the other direction
-  get_clues: ->
-    row = @row
-    col = @col
-    row-- while @valid_cell(row - 1, @col)
-    col-- while @valid_cell(@row, col - 1)
-    across_number = parseInt @grid[@row][col].siblings('span').text(), 10
-    down_number   = parseInt @grid[row][@col].siblings('span').text(), 10
+  get_clues: (row = @row, col = @col) ->
+    orig_row = row
+    orig_col = col
+    row-- while @valid_cell(row - 1, orig_col)
+    col-- while @valid_cell(orig_row, col - 1)
+    across_number = parseInt @grid[orig_row][col].siblings('span').text(), 10
+    down_number   = parseInt @grid[row][orig_col].siblings('span').text(), 10
     clues = {}
 
     for clue in @data.clues
