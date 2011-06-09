@@ -21,5 +21,6 @@ gem 'thin'
 gem 'em-http-request'
 
 group :production do
+  gem 'dalli'
   gem 'therubyracer-heroku', '0.8.1.pre3'
 end
