@@ -1,3 +1,7 @@
+<% provide :javascripts do %>
+  <%= javascript_include_tag 'crosswords' %>
+<% end %>
+
 <dl>
   <dt>Title</dt>
   <dd><%= @crossword.title %></dd>
@@ -21,3 +25,5 @@
 
 <%= link_to 'Edit', [:edit, @crossword] %> |
 <%= link_to 'Back', crosswords_path %>
+
+<div id='crossword' data-id='<%= @crossword.id %>'></div>

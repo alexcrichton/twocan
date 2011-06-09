@@ -1,7 +1,20 @@
-// Place all the styles related to the crosswords controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+#crossword {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 
-body.crosswords {
-  // Place scoped styles here
+  input {
+    font-size: 25px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+
+    &.black {
+      background: black;
+    }
+
+    &.selected {
+      background: lighten(green, 70%);
+    }
+  }
 }
