@@ -9,19 +9,21 @@
   <dd><%= @crossword.author %></dd>
   <dt>Copyright</dt>
   <dd><%= @crossword.copyright %></dd>
-  <dt>Width</dt>
-  <dd><%= @crossword.width %></dd>
-  <dt>Height</dt>
-  <dd><%= @crossword.height %></dd>
-  <dt>Solution</dt>
-  <dd><%= @crossword.solution %></dd>
 </dl>
 
-<ul>
-  <% @crossword.clues.each do |c| %>
-    <li><%= c %></li>
+<h2>Across</h2>
+<ol>
+  <% @crossword.clues.across.each do |c| %>
+    <li value="<%= c.number %>"><%= c.text %></li>
   <% end %>
-</ul>
+</ol>
+
+<h2>Down</h2>
+<ol>
+  <% @crossword.clues.down.each do |c| %>
+    <li value="<%= c.number %>"><%= c.text %></li>
+  <% end %>
+</ol>
 
 <%= link_to 'Edit', [:edit, @crossword] %> |
 <%= link_to 'Back', crosswords_path %>

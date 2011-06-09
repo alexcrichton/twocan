@@ -3,7 +3,9 @@
   top: 20px;
   right: 20px;
 
-  input {
+  .cell {
+    display: inline;
+    position: relative;
     font-size: 25px;
     width: 30px;
     height: 30px;
@@ -15,6 +17,14 @@
 
     &.selected {
       background: lighten(green, 70%);
+    }
+
+    span {
+      font-size: 10px;
+      position: absolute;
+      top: -3px;
+      left: 3px;
+      cursor: text;
     }
   }
 }

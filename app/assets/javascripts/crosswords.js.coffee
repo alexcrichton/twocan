@@ -13,13 +13,13 @@ class Crossword
       @solution[i] = []
       for j in [0...@data.width]
         @solution[i][j] = @data.solution.charAt(i * @data.width + j)
-        @grid[i][j] = $('<input>').prop('type', 'text')
+        @grid[i][j] = $('<input>').prop('type', 'text').addClass('cell')
 
         if @solution[i][j] == '.'
           @grid[i][j].addClass('black').prop('disabled', true)
 
-  keypress: (code) ->
-    switch (code)
+  keypress: (event) ->
+    switch (event.which)
       when 32 # spacebar
         @direction = (if @direction == 'across' then 'down' else 'across')
         @update_selected()
@@ -38,7 +38,7 @@ class Crossword
       when 40 then @next_cell  0,  1, true # down arrow
 
       else
-        string = String.fromCharCode(code).toUpperCase()
+        string = String.fromCharCode(event.which).toUpperCase()
         if Crossword.ALPHA.indexOf(string) >= 0
           @grid[@row][@col].val(string)
           if @direction == 'across' then @next_cell 1, 0 else @next_cell 0, 1
@@ -87,30 +87,42 @@ class Crossword
       r -= dy
       c -= dx
 
+  select: (input) ->
+    for i in [0...@data.height]
+      for j in [0...@data.width]
+        if @grid[i][j].get(0) == input.get(0)
+          @row = i
+          @col = j
+    @grid[@row][@col].focus()
+    @update_selected()
+
   setup: (@container) ->
     @container.addClass('grid')
     @container.children().remove()
     for input_row in @grid
       row = $('<div>').addClass('row')
-
       for input in input_row
         row.append input
-        input.bind 'keydown', (event) =>
-          if !event.metaKey && !event.ctrlKey && !event.altKey
-            @keypress event.which
-
       @container.append row
 
-    @container.click =>
-      focused = @container.find('input:focus')
-      return if focused.size == 0
+    for clue in @data.clues
+      input = @grid[clue.row][clue.column]
+      continue if input.parent().hasClass('cell')
 
-      for i in [0...@data.height]
-        for j in [0...@data.width]
-          if @grid[i][j].get(0) == focused.get(0)
-            @row = i
-            @col = j
-      @update_selected()
+      outer = $('<div>').addClass('cell')
+      outer.insertBefore(input)
+      outer.append(input.remove())
+      outer.append($('<span>').text(clue.number))
+
+    for row in @grid
+      for input in row
+        input.bind 'keydown', (event) =>
+          @keypress event if !event.metaKey && !event.ctrlKey && !event.altKey
+
+    @container.find('input').click (event) => @select $(event.currentTarget)
+
+    @container.find('span').click (event) =>
+      @select $(event.currentTarget).siblings('input')
 
 jQuery ->
   crossword = null
