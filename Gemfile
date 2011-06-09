@@ -1,8 +1,7 @@
 source :rubygems
 
 group :useful do
-  gem 'thin', :require => false
-  gem 'heroku'
+  gem 'heroku', :require => false
 end
 
 gem 'rails', '3.1.0.rc2'
@@ -18,4 +17,9 @@ gem 'uglifier'
 gem 'jquery-rails'
 
 gem 'pusher'
+gem 'thin'
 gem 'em-http-request'
+
+group :production do
+  gem 'therubyracer-heroku', '0.8.1.pre3'
+end
