@@ -2,7 +2,6 @@
   position: fixed;
   top: 65px;
   right: 20px;
-  float: right;
 
   .cell {
     display: inline;
@@ -48,6 +47,24 @@
 
 .clues {
   float: left;
+
+  ol {
+    margin-right: 20px;
+    max-width: 300px;
+    max-height: 700px;
+    overflow: auto;
+  }
+
+  li {
+    font-size: 18px;
+    margin: 1px;
+    padding: 3px;
+
+    &.solved {
+      font-size: 14px;
+      opacity: 0.4;
+    }
+  }
 
   h2 { margin: 0; }
 

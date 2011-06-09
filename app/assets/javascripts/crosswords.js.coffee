@@ -28,42 +28,80 @@ class Crossword
     return if event.metaKey || event.ctrlKey || event.altKey
 
     switch (event.which)
-      when 8 # backspace key
-        if @grid[@row][@col].val() == ''
-          if @direction == 'across'
-            @next_cell -1, 0
-          else
-            @next_cell 0, -1
-        if @grid[@row][@col].val() != ''
-          @grid[@row][@col].val('')
-          @container.trigger 'crossword:remove-letter',
-            row: @row
-            col: @col
-
-      when 32 then @invert_direction() # spacebar
+      when 8  then @backspace()            # backspace key
+      when 32 then @invert_direction()     # spacebar
       when 37 then @next_cell -1,  0, true # left arrow
       when 38 then @next_cell  0, -1, true # up arrow
       when 39 then @next_cell  1,  0, true # right arrow
       when 40 then @next_cell  0,  1, true # down arrow
 
       else
+        # Only insert characters which are upper case and alphabetic
         string = String.fromCharCode(event.which).toUpperCase()
-        if Crossword.ALPHA.indexOf(string) >= 0
-          if @grid[@row][@col].val() != string
-            @container.trigger 'crossword:new-letter',
-              row: @row
-              col: @col
-              letter: string
+        @insert_character(string) if Crossword.ALPHA.indexOf(string) >= 0
 
-          @grid[@row][@col].val(string)
-          if @direction == 'across' then @next_cell 1, 0 else @next_cell 0, 1
-
+    # Don't do whatever the default is because we took care of it. It's easier
+    # to take care of it in most cases because there's just too many edge cases
+    # that would have to be dealt with otherwise
     false
 
+  insert_character: (character) ->
+    if @grid[@row][@col].val() != character
+      @grid[@row][@col].val(character)
+      @container.trigger 'crossword:new-letter',
+        row: @row
+        col: @col
+        letter: character
+      clues     = @get_clues()
+      completed = {}
+      completed.primary   = clues.primary   if @clue_finished clues.primary
+      completed.secondary = clues.secondary if @clue_finished clues.secondary
+      @container.trigger 'crossword:clue-solved', completed
+
+    # Move the cursor if we can
+    if @direction == 'across' then @next_cell 1, 0 else @next_cell 0, 1
+
+  # Tests whether a clue has been completed (completely filled in)
+  clue_finished: (clue) ->
+    # Start initially at the clue's location and then move across it
+    row = clue.row
+    col = clue.column
+    dx = if clue.direction == 'across' then 1 else 0
+    dy = 1 - dx
+
+    # Go all the way backwards to the beginning of this word
+    while @valid_cell(row, col)
+      return false if @grid[row][col].val() == ''
+      row += dy
+      col += dx
+
+    # Everything wasn't blank, the clue is filled in
+    true
+
+  # Called whenver backspace is hit. This will delete the necessary characters
+  # and call the necessary callbacks.
+  backspace: ->
+    if @grid[@row][@col].val() == ''
+      if @direction == 'across'
+        @next_cell -1, 0
+      else
+        @next_cell 0, -1
+
+    if @grid[@row][@col].val() != ''
+      @grid[@row][@col].val('')
+      @container.trigger 'crossword:clue-unsolved', @get_clues()
+      @container.trigger 'crossword:remove-letter', row: @row, col: @col
+
+  # Tests whether a (row, col) combination point to a valid location in the
+  # grid. A valid location is within bounds and also not a black square
   valid_cell: (row, col) ->
     0 <= col < @data.width && 0 <= row < @data.height &&
       !@grid[row][col].prop('disabled')
 
+  # Conditionally goes to the next cell, using the specified delta distances
+  # One of the distances should be 0 while the other is 1 or -1.
+  # If skip_over_black is specified, then black squares don't stop movement,
+  # but rather movement skips over them
   next_cell: (dx, dy, skip_over_black = false) ->
     newcol = @col + dx
     newrow = @row + dy
@@ -104,28 +142,41 @@ class Crossword
       row -= dy
       col -= dx
 
+  # Fire an event which indicates that the selection has changed
   fire_selected_event: ->
+    event = @get_clues()
+    event.row = @row
+    event.col = @col
+    event.direction = @direction
+
+    @container.trigger 'crossword:word-selected', event
+
+  # Get the two relevant clues (if there are two) for the selected row and
+  # columnt. The object returned has a 'primary' and 'secondary' key where the
+  # 'primary' key is the clue in the same direction as is currently working and
+  # the secondary is the other direction
+  get_clues: ->
     row = @row
     col = @col
     row-- while @valid_cell(row - 1, @col)
     col-- while @valid_cell(@row, col - 1)
     across_number = parseInt @grid[@row][col].siblings('span').text(), 10
     down_number   = parseInt @grid[row][@col].siblings('span').text(), 10
-    event = {row:@row, col:@col, direction:@direction}
+    clues = {}
 
     for clue in @data.clues
       if clue.direction == 'across' && clue.number == across_number
         if @direction == 'across'
-          event.primary = clue
+          clues.primary = clue
         else
-          event.secondary = clue
+          clues.secondary = clue
       else if clue.direction == 'down' && clue.number == down_number
         if @direction == 'across'
-          event.secondary = clue
+          clues.secondary = clue
         else
-          event.primary = clue
+          clues.primary = clue
 
-    @container.trigger 'crossword:word-selected', event
+    clues
 
   # Select a cell in the crossword based on the row and column it's located at.
   # You can also supply an optional direction for the selection to have
@@ -193,21 +244,38 @@ class Crossword
       @select_input $(event.currentTarget).siblings('input')
 
 jQuery ->
-  $.getJSON '/crosswords/' + $('#crossword').data('id'), (data) ->
-    window.crossword = new Crossword(data)
-    crossword.setup $('#crossword')
+  # Helper function to run a callback on each clue from an event created
+  # by the crossword. The three arguments to the callback are:
+  #  1. the clue object
+  #  2. boolean if the clue is the primary clue
+  #  3. a string selector to the clue's <li> tag
+  each_clue = (clues, fn) ->
+    if clues.primary
+      fn clues.primary, true, '#' + clues.primary.direction +
+          ' li[value=' + clues.primary.number + ']'
+    if clues.secondary
+      fn clues.secondary, false, '#' + clues.secondary.direction +
+          ' li[value=' + clues.secondary.number + ']'
 
-  $('#crossword').bind 'crossword:word-selected', (_, clues) ->
+  # Actually get this crossword's information
+  # $.getJSON '/crosswords/' + $('#crossword').data('id'), (data) ->
+  container = $('#crossword')
+  window.crossword = new Crossword(container.data('crossword'))
+  crossword.setup container
+
+  # When the word selection changes, change how the clue looks in the lists
+  container.bind 'crossword:word-selected', (_, clues) ->
     $('li.selected').removeClass('selected')
     $('li.semi-selected').removeClass('semi-selected')
 
-    if clues.primary
-      $('#' + clues.primary.direction +
-          ' li[value=' + clues.primary.number + ']').addClass('selected')
+    each_clue clues, (clue, primary, selector) ->
+      $(selector).addClass(if primary then 'selected' else 'semi-selected')
 
-    if clues.secondary
-      $('#' + clues.secondary.direction +
-          ' li[value=' + clues.secondary.number + ']').addClass('semi-selected')
+  # When words are solved/unsolved, update classes appropriately
+  container.bind 'crossword:clue-unsolved', (_, clues) ->
+    each_clue clues, (_, _, selector) -> $(selector).removeClass('solved')
+  container.bind 'crossword:clue-solved', (_, clues) ->
+    each_clue clues, (_, _, selector) -> $(selector).addClass('solved')
 
   # Click a clue to get to the cells where it's located
   $('.clues li').click ->

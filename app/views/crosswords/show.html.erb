@@ -29,4 +29,7 @@
   </ol>
 </div>
 
-<div id='crossword' data-id='<%= @crossword.id %>'></div>
+<%= content_tag :div, :id => 'crossword',
+      :data => {:crossword => @crossword, :id => @crossword.id.to_s} do %>
+  <span>Crossword loading...</span>
+<% end %>
