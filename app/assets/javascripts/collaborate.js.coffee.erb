@@ -1,3 +1,5 @@
+#= require pusher
+
 jQuery ->
   pusher = new Pusher('<%= Pusher.key %>')
   channel = pusher.subscribe $('#crossword').data('id')
