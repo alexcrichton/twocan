@@ -138,7 +138,6 @@ class Crossword
     @grid[@row][@col].focus() # Make sure the input is focused
     @update_highlighting 'selected' # Nice visual indication of word selected
     @fire_selected_event()    # Tell the container what clues have been selected
-    
 
   # Base the current selected box of the crossword on an input element. The
   # input should be a jQuery element
@@ -154,7 +153,7 @@ class Crossword
     for clue in @data.clues
       if clue.number == number and clue.direction == direction
         return @select(clue.row, clue.column, clue.direction)
-    
+
   # Setup the given container to be a crossword. All of the event handlers are
   # installed here. This assumes that jQuery is available
   setup: (@container) ->
@@ -183,8 +182,8 @@ class Crossword
     # Now install the event handlers when we're done moving everything around
     for row in @grid
       for input in row
-        input.bind 'keydown', (event) => @keypress event 
-    
+        input.bind 'keydown', (event) => @keypress event
+
     # Some handlers for selecting a square to enter from
     @container.find('input').click (event) =>
       @select_input $(event.currentTarget)
@@ -201,7 +200,7 @@ jQuery ->
   $('#crossword').bind 'crossword:word-selected', (_, clues) ->
     $('li.selected').removeClass('selected')
     $('li.semi-selected').removeClass('semi-selected')
-    
+
     if clues.primary
       $('#' + clues.primary.direction +
           ' li[value=' + clues.primary.number + ']').addClass('selected')
@@ -209,7 +208,7 @@ jQuery ->
     if clues.secondary
       $('#' + clues.secondary.direction +
           ' li[value=' + clues.secondary.number + ']').addClass('semi-selected')
-  
+
   # Click a clue to get to the cells where it's located
   $('.clues li').click ->
     type   = $(this).closest('.clues').prop('id')

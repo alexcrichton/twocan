@@ -5,7 +5,7 @@ class Crossword
   field :author
   field :copyright
   field :notes
-  field :binary_data, :type => BSON::Binary 
+  field :binary_data, :type => BSON::Binary
   field :width, :type => Integer
   field :height, :type => Integer
   field :solution
