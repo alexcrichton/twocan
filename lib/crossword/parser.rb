@@ -3,21 +3,7 @@ class Crossword
   class ChecksumError < StandardError; end
   class CompatibilityError < StandardError; end
 
-  class Grid
-    def initialize crossword
-      @crossword = crossword
-    end
-
-    def parse! io
-      @grid_string = io.read(@crossword.width * @crossword.height)
-    end
-
-    def to_s
-      @grid_string
-    end
-  end
-
-  class Section
+  class Section < Struct.new(:title, :length, :cksum, :data)
     attr_accessor :title, :length, :cksum, :data
 
     def self.parse! io
@@ -32,6 +18,31 @@ class Crossword
     end
   end
 
+  class Grid < Struct.new(:crossword)
+    def initialize crossword
+      @crossword = crossword
+    end
+
+    def parse! io
+      @board = io.read(@crossword.width * @crossword.height).chars.to_a
+    end
+
+    def to_s
+      @board.join
+    end
+
+    def [] row, column
+      if row < 0 || column < 0 || row >= @crossword.height ||
+          column >= @crossword.width
+        '.'
+      else
+        @board[row * @crossword.width + column]
+      end
+    end
+  end
+
+  class ProcessedClue < Struct.new(:text, :row, :column); end
+
   class Parser
     NUL = "\x00".freeze
     attr_accessor :width, :height, :solution, :progress, :title, :author,
@@ -39,10 +50,10 @@ class Crossword
 
     # Parse the given IO stream. For the specifics on the format of a crossword,
     # see http://code.google.com/p/puz/wiki/FileFormat
-    # 
+    #
     # @param [IO, String] io the IO stream that is readable or a string that is
     #    a crossword file
-    # 
+    #
     # @raise [ParseError] if the stream given is not a valid crossword file
     # @raise [ChecksumError] if the checksums given in the stream do not match
     # @raise [CompatibilityError] if the version of the crossword file is not
@@ -71,30 +82,61 @@ class Crossword
       _garbage   = io.read(0x2)
       @scrambled = io.read(0x2).unpack('v').first
 
-      @solution = Grid.new(self).tap { |g| g.parse! io }
-      @progress = Grid.new(self).tap { |g| g.parse! io }
+      @solution = Grid.new(self).tap{ |g| g.parse! io }
+      @progress = Grid.new(self).tap{ |g| g.parse! io }
 
       io.set_encoding('iso-8859-1')
       @title     = io.readline(NUL).chomp(NUL)
       @author    = io.readline(NUL).chomp(NUL)
       @copyright = io.readline(NUL).chomp(NUL)
 
-      @clues = []
-      num_clues.times { @clues << io.readline(NUL).chomp(NUL) }
+      @unprocessed_clues = []
+      num_clues.times { @unprocessed_clues << io.readline(NUL).chomp(NUL) }
       @notes = io.readline(NUL).chomp(NUL)
 
       @sections = []
       @sections << Section.parse!(io) while !io.eof?
 
       validate io
+      process_clues
     end
 
     protected
 
+    # Process all of the clues to figure out where they go on the grid and what
+    # the number of each clue should be
+    def process_clues
+      @clues = []
+      number = 1
+
+      @height.times { |row|
+        @width.times { |col|
+          next if @solution[row, col] == '.'
+
+          if @solution[row, col - 1] == '.' && @solution[row, col + 1] != '.'
+            @clues << processed_clue_for(row, col)
+          end
+
+          if @solution[row - 1, col] == '.' && @solution[row + 1, col] != '.'
+            @clues << processed_clue_for(row, col)
+          end
+        }
+      }
+    end
+
+    def processed_clue_for row, col
+      raise ParseError if @unprocessed_clues.empty?
+      ProcessedClue.new.tap { |c|
+        c.text = @unprocessed_clues.pop.encode('utf-8')
+        c.row = row
+        c.column = col
+      }
+    end
+
     # Validates checksums of an IO. Assumes #parse! has been previously called.
     # For the details on the checksums, see the same website mentioned in
     # #parse!
-    # 
+    #
     # @param [IO] io the I/O object which is read from
     def validate io
       # Initially validate the CIB checksum
@@ -109,7 +151,7 @@ class Crossword
       ck = cksum io, @author.length + 1, ck
       ck = cksum io, @copyright.length + 1, ck
 
-      @clues.each_with_index { |c, i|
+      @unprocessed_clues.each_with_index { |c, i|
         ck = cksum io, c.length, ck
         raise ParseError if io.getbyte != 0
       }
@@ -133,7 +175,7 @@ class Crossword
       c_part = cksum io, @title.length + 1
       c_part = cksum io, @author.length + 1, c_part
       c_part = cksum io, @copyright.length + 1, c_part
-      @clues.each_with_index { |c, i|
+      @unprocessed_clues.each_with_index { |c, i|
         c_part = cksum io, c.length, c_part
         raise ParseError if io.getbyte != 0
       }
@@ -151,11 +193,11 @@ class Crossword
 
     # Performs a checksum on the I/O over a specified region from whatever the
     # current position of the IO object is
-    # 
+    #
     # @param [IO] io the I/O object
     # @param [Integer] len the number of bytes to sum
     # @param [Integer] sum the initial value of the checksum
-    # 
+    #
     # @return [Integer] the checksum of the bytes
     def cksum io, len, sum = 0
       len.times{
