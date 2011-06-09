@@ -32,10 +32,10 @@ class Crossword
             @next_cell 0, -1
         @grid[@row][@col].val('')
 
-      when 37 then @next_cell -1,  0 # left arrow
-      when 38 then @next_cell  0, -1 # up arrow
-      when 39 then @next_cell  1,  0 # right arrow
-      when 40 then @next_cell  0,  1 # down arrow
+      when 37 then @next_cell -1,  0, true # left arrow
+      when 38 then @next_cell  0, -1, true # up arrow
+      when 39 then @next_cell  1,  0, true # right arrow
+      when 40 then @next_cell  0,  1, true # down arrow
 
       else
         string = String.fromCharCode(code).toUpperCase()
@@ -49,36 +49,43 @@ class Crossword
     0 <= col < @data.width && 0 <= row < @data.height &&
       !@grid[row][col].prop('disabled')
 
-  next_cell: (dx, dy) ->
+  next_cell: (dx, dy, skip_over_black = false) ->
     newcol = @col + dx
     newrow = @row + dy
+    while skip_over_black && 0 <= newcol < @data.width &&
+        0 <= newrow < @data.height &&
+        @grid[newrow][newcol].prop('disabled')
+      newcol += dx
+      newrow += dy
+
     if @valid_cell(newrow, newcol)
       @grid[@row = newrow][@col = newcol].focus()
       @update_selected()
 
+  # Updates the selected word to enter or the highlighted row in the grid. This
+  # provides input to show where you're typing and what cells will be filled in
   update_selected: ->
+    # Deselect everything first
     for row in @grid
       for input in row
         input.removeClass('selected')
 
+    # Start initially at the cursor's location and move around from there
     r = @row
     c = @col
-    dx = if @direction == 'across' then 1 else 0
-    dy = 1 - dx
+    dx = if @direction == 'across' then -1 else 0
+    dy = -(dx + 1)
 
-    while @valid_cell(r, c)
-      @grid[r][c].addClass('selected')
+    # Go all the way backwards to the beginning of this word
+    while @valid_cell(r + dy, c + dx)
       r += dy
       c += dx
 
-    r = @row
-    c = @col
-    dx = -dx
-    dy = -dy
+    # Now go forwards and mark each cell as selected
     while @valid_cell(r, c)
       @grid[r][c].addClass('selected')
-      r += dy
-      c += dx
+      r -= dy
+      c -= dx
 
   setup: (@container) ->
     @container.addClass('grid')
