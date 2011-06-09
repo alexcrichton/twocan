@@ -1,0 +1,36 @@
+jQuery ->
+  pusher = new Pusher('<%= Pusher.key %>')
+  channel = pusher.subscribe $('#crossword').data('id')
+
+  channel.mytrigger = (event, data) ->
+    data.socket_id = @pusher.socket_id
+    $.ajax
+      url: '/pusher/push'
+      type: 'POST'
+      data: {channel:@name, event:event, data:data}
+
+  container = $('#crossword')
+  container.bind 'crossword:word-selected', (_, data) ->
+    channel.mytrigger 'word-selected', data
+  container.bind 'crossword:new-letter', (_, data) ->
+    channel.mytrigger 'new-letter', data
+  container.bind 'crossword:remove-letter', (_, data) ->
+    channel.mytrigger 'remove-letter', data
+
+  channel.bind 'word-selected', (data) ->
+    return if data.socket_id == pusher.socket_id
+    row = parseInt(data.row, 10)
+    col = parseInt(data.col, 10)
+    window.crossword.update_highlighting 'selected2', row, col, data.direction
+
+  channel.bind 'new-letter', (data) ->
+    return if data.socket_id == pusher.socket_id
+    row = parseInt(data.row, 10)
+    col = parseInt(data.col, 10)
+    window.crossword.grid[row][col].val(data.letter)
+
+  channel.bind 'remove-letter', (data) ->
+    return if data.socket_id == pusher.socket_id
+    row = parseInt(data.row, 10)
+    col = parseInt(data.col, 10)
+    window.crossword.grid[row][col].val('')

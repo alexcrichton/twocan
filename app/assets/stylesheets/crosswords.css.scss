@@ -1,7 +1,8 @@
 #crossword {
-  position: absolute;
-  top: 20px;
+  position: fixed;
+  top: 65px;
   right: 20px;
+  float: right;
 
   .cell {
     display: inline;
@@ -15,9 +16,8 @@
       background: black;
     }
 
-    &.selected {
-      background: lighten(green, 70%);
-    }
+    &.selected { background: lighten(green, 70%); }
+    &.selected2 { background: lighten(red, 45%); }
 
     span {
       font-size: 10px;
@@ -27,4 +27,30 @@
       cursor: text;
     }
   }
+}
+
+.info {
+  position: fixed;
+  top: 5px;
+  margin: 0;
+  right: 20px;
+
+  dl { overflow: auto; }
+  dt {
+    width: 100px;
+    clear: left;
+    float: left;
+    text-align: right;
+    font-weight: bold;
+  }
+  dd { float: left; clear: right; margin-left: 10px; }
+}
+
+.clues {
+  float: left;
+
+  h2 { margin: 0; }
+
+  .selected { background: lighten(blue, 30%); }
+  .semi-selected { border: 1px solid #aaa; }
 }

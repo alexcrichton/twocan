@@ -132,7 +132,7 @@ class Crossword
       raise ParseError if @unprocessed_clues.empty?
 
       Clue.new{ |c|
-        c.text      = @unprocessed_clues.pop.encode('utf-8')
+        c.text      = @unprocessed_clues.shift.encode('utf-8')
         c.row       = row
         c.column    = col
         c.direction = dir

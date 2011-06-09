@@ -2,7 +2,7 @@
   <%= javascript_include_tag 'crosswords' %>
 <% end %>
 
-<dl>
+<dl class='info'>
   <dt>Title</dt>
   <dd><%= @crossword.title %></dd>
   <dt>Author</dt>
@@ -11,21 +11,22 @@
   <dd><%= @crossword.copyright %></dd>
 </dl>
 
-<h2>Across</h2>
-<ol>
-  <% @crossword.clues.across.each do |c| %>
-    <li value="<%= c.number %>"><%= c.text %></li>
-  <% end %>
-</ol>
+<div id='across' class='clues'>
+  <h2>Across</h2>
+  <ol>
+    <% @crossword.clues.across.each do |c| %>
+      <li value="<%= c.number %>"><%= c.text %></li>
+    <% end %>
+  </ol>
+</div>
 
-<h2>Down</h2>
-<ol>
-  <% @crossword.clues.down.each do |c| %>
-    <li value="<%= c.number %>"><%= c.text %></li>
-  <% end %>
-</ol>
-
-<%= link_to 'Edit', [:edit, @crossword] %> |
-<%= link_to 'Back', crosswords_path %>
+<div id='down' class='clues'>
+  <h2>Down</h2>
+  <ol>
+    <% @crossword.clues.down.each do |c| %>
+      <li value="<%= c.number %>"><%= c.text %></li>
+    <% end %>
+  </ol>
+</div>
 
 <div id='crossword' data-id='<%= @crossword.id %>'></div>
