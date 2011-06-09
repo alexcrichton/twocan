@@ -125,7 +125,9 @@ class Crossword
     # Deselect everything first
     for r in @grid
       for input in r
-        input.removeClass(klass)
+        input.removeClass(klass).removeClass('current')
+
+    @grid[row][col].addClass('current')
 
     # Start initially at the cursor's location and move around from there
     dx = if dir == 'across' then -1 else 0

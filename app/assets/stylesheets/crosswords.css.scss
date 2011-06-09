@@ -15,8 +15,10 @@
       background: black;
     }
 
-    &.selected { background: lighten(green, 70%); }
+    &.selected { background: lighten(green, 70%) !important; }
+    &.selected.current { background: lighten(green, 60%) !important; }
     &.selected2 { background: lighten(red, 45%); }
+    &.selected2.current { background: lighten(red, 40%); }
 
     span {
       font-size: 10px;
