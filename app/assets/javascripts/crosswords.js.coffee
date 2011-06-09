@@ -1,4 +1,5 @@
 #= require collaborate
+#= require jquery/scrollto
 
 class Crossword
   @ALPHA: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -286,7 +287,9 @@ jQuery ->
     $('li.semi-selected').removeClass('semi-selected')
 
     each_clue clues, (clue, primary, selector) ->
-      $(selector).addClass(if primary then 'selected' else 'semi-selected')
+      element = $(selector)
+      element.addClass(if primary then 'selected' else 'semi-selected')
+      element.closest('ol').scrollTo element, 200
 
   # When words are solved/unsolved, update classes appropriately
   container.bind 'crossword:clue-unsolved', (_, clues) ->
