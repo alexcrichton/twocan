@@ -196,7 +196,10 @@ class Crossword
     for i in [0...@data.height]
       for j in [0...@data.width]
         if @grid[i][j].get(0) == input.get(0)
-          return @select i, j
+          if i == @row && j == @col
+            return @invert_direction()
+          else
+            return @select i, j
 
   # Base the current selected box in the crossword on a clue. The clue is
   # specified by its number and its direction.
@@ -238,7 +241,6 @@ class Crossword
     # Some handlers for selecting a square to enter from
     @container.find('input').click (event) =>
       @select_input $(event.currentTarget)
-    @container.find('input').dblclick (event) => @invert_direction()
     # In case you hit the span instead of the input, also focus the input
     @container.find('span').click (event) =>
       @select_input $(event.currentTarget).siblings('input')
