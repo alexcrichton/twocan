@@ -1,21 +1,24 @@
-<h1>Listing crosswords</h1>
+<h1>Listing Crosswords</h1>
 
-<table>
+<table id='crosswords'>
   <tr>
-    <th>Binary file</th>
-    <th></th>
-    <th></th>
-    <th></th>
+    <th>Title</th>
+    <th>Author</th>
+    <th>Copyright</th>
+    <th>&nbsp;</th>
   </tr>
 
-<% @crosswords.each do |crossword| %>
-  <tr>
-    <td><%= crossword.binary_file %></td>
-    <td><%= link_to 'Show', crossword %></td>
-    <td><%= link_to 'Edit', edit_crossword_path(crossword) %></td>
-    <td><%= link_to 'Destroy', crossword, confirm: 'Are you sure?', method: :delete %></td>
-  </tr>
-<% end %>
+  <% @crosswords.each do |crossword| %>
+    <tr>
+      <td><%= link_to crossword.title, crossword %></td>
+      <td><%= crossword.author %></td>
+      <td><%= crossword.copyright %></td>
+      <td>
+        <%= link_to 'Destroy', crossword, confirm: 'Are you sure?',
+              method: :delete %>
+      </td>
+    </tr>
+  <% end %>
 </table>
 
 <br />

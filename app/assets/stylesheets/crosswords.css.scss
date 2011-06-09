@@ -54,3 +54,16 @@
   .selected { background: lighten(blue, 30%); }
   .semi-selected { border: 1px solid #aaa; }
 }
+
+#crosswords {
+  th, td {
+    margin: 0;
+    padding: 4px;
+    border-left: 1px solid black;
+
+    &:first-child { border-left: none; }
+  }
+
+  th { border-bottom: 2px solid black; }
+  td { border-bottom: 1px solid black; }
+}

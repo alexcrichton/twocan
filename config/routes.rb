@@ -1,7 +1,7 @@
 Crosswords::Application.routes.draw do
-  resources :crosswords
+  resources :crosswords, :except => [:edit, :update]
 
   post 'pusher/auth' => 'home#auth'
   post 'pusher/push' => 'home#push'
-  root :to => 'home#index'
+  root :to => 'crosswords#index'
 end

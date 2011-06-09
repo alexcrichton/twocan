@@ -24,21 +24,9 @@ class CrosswordsController < ApplicationController
     respond_with @crossword
   end
 
-  def edit
-    @crossword = Crossword.find(params[:id])
-    respond_with @crossword
-  end
-
   def create
     @crossword = Crossword.new(params[:crossword])
     @crossword.save
-
-    respond_with @crossword
-  end
-
-  def update
-    @crossword = Crossword.find(params[:id])
-    @crossword.update_attributes params[:crossword]
 
     respond_with @crossword
   end
