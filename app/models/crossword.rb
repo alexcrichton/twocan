@@ -16,6 +16,8 @@ class Crossword
 
   attr_accessor :binary_file
 
+  embeds_many :clues
+
   def binary_file_is_valid
     return unless @binary_file.present?
     self[:binary_data] = nil
@@ -29,8 +31,9 @@ class Crossword
     self[:notes]     = parser.notes
     self[:width]     = parser.width
     self[:height]    = parser.height
-    self[:clues]     = parser.clues.map{ |c| c.encode('utf-8') }
     self[:solution]  = parser.solution.to_s
+
+    self.clues = parser.clues
 
     file.rewind
     self[:binary_data] = file.read

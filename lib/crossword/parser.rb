@@ -41,8 +41,6 @@ class Crossword
     end
   end
 
-  class ProcessedClue < Struct.new(:text, :row, :column); end
-
   class Parser
     NUL = "\x00".freeze
     attr_accessor :width, :height, :solution, :progress, :title, :author,
@@ -108,28 +106,37 @@ class Crossword
     def process_clues
       @clues = []
       number = 1
+      added  = false
 
       @height.times { |row|
         @width.times { |col|
           next if @solution[row, col] == '.'
 
           if @solution[row, col - 1] == '.' && @solution[row, col + 1] != '.'
-            @clues << processed_clue_for(row, col)
+            @clues << processed_clue_for(row, col, 'across', number)
+            added = true
           end
 
           if @solution[row - 1, col] == '.' && @solution[row + 1, col] != '.'
-            @clues << processed_clue_for(row, col)
+            @clues << processed_clue_for(row, col, 'down', number)
+            added = true
           end
+
+          number += 1 if added
+          added = false
         }
       }
     end
 
-    def processed_clue_for row, col
+    def processed_clue_for row, col, dir, number
       raise ParseError if @unprocessed_clues.empty?
-      ProcessedClue.new.tap { |c|
-        c.text = @unprocessed_clues.pop.encode('utf-8')
-        c.row = row
-        c.column = col
+
+      Clue.new{ |c|
+        c.text      = @unprocessed_clues.pop.encode('utf-8')
+        c.row       = row
+        c.column    = col
+        c.direction = dir
+        c.number    = number
       }
     end
 
