@@ -8,10 +8,11 @@ body { overflow: auto; }
 
     &.black { background: black; }
 
-    &.selected { background: lighten(green, 70%) !important; }
-    &.current { background: lighten(green, 60%) !important; }
-    &.selected2 { background: lighten(red, 45%); }
-    &.current2 { background: lighten(red, 40%); }
+    &.selected { background: lighten(green, 60%) !important; }
+    &.current { background: lighten(green, 50%) !important; }
+    &.selected2 { background: lighten(blue, 40%); }
+    &.current2 { background: lighten(blue, 35%); }
+    &.wrong { background: lighten(red, 35%) !important; }
 
     span {
       position: absolute;
@@ -86,7 +87,7 @@ body { overflow: auto; }
     }
   }
 
-  #crossword { text-align: center; }
+  #crossword { text-align: center; clear: left; }
   .cell {
     font-size: 18px;
     width: 20px;
@@ -117,8 +118,8 @@ body { overflow: auto; }
     float: right;
     clear: right;
   }
-  #crossword { float: right; }
-  .reveal { float: right; clear: right; }
+  #crossword { float: right; clear: none; }
+  .functions { float: right; clear: right; }
 
   #clues { width: 30%; }
   .clues {

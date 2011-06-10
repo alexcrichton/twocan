@@ -94,6 +94,7 @@ class Crossword
   insert_character: (character, row = @row, col = @col, local_event = true) ->
     if @grid[row][col].val() != character
       @grid[row][col].val(character)
+      @grid[row][col].removeClass('wrong')
       if local_event
         @container.trigger 'crossword:new-letter',
           row: @row
@@ -111,6 +112,8 @@ class Crossword
 
   # Tests whether a clue has been completed (completely filled in)
   clue_finished: (clue) ->
+    return false unless clue
+
     # Start initially at the clue's location and then move across it
     row = clue.row
     col = clue.column
@@ -291,6 +294,28 @@ class Crossword
           when '.' then continue
           when '-' then @grid[i][j].val('')
           else @insert_character char, i, j, false
+
+  # Check this puzzle's progress. Marks all cells which have values that are
+  # wrong with the 'wrong' class
+  check: () ->
+    all_right = true
+
+    for i in [0...@height]
+      for j in [0...@width]
+        continue if @grid[i][j].prop('disabled')
+        if @grid[i][j].val() == ''
+          all_right = false
+        else if @grid[i][j].val() != @solution[i][j]
+          @grid[i][j].addClass('wrong')
+          all_right = false
+
+    all_right
+
+  # Clear's all current progress with this crossword
+  clear: () ->
+    for i in [0...@height]
+      for j in [0...@width]
+        @backspace i, j, false
 
   # Setup the given container to be a crossword. All of the event handlers are
   # installed here. This assumes that jQuery is available
