@@ -2,10 +2,9 @@ class Ability
   include CanCan::Ability
 
   def initialize user, session
-    tokens = [session[:token]]
-    tokens << user.token if user
+    token = user.try(:token) || session[:token]
 
     can [:create, :read], Crossword
-    can :destroy, Crossword, :session_token.in => tokens.uniq
+    can :destroy, Crossword, :session_token => token
   end
 end
