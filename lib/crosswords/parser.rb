@@ -109,7 +109,7 @@ module Crosswords
         while (c = io.sysread(0x1)) != "\x00"
           string << c
         end
-        string.force_encoding('iso-8859-1')
+        string.force_encoding 'iso-8859-1'
         string.encode! 'utf-8'
       end
     end
