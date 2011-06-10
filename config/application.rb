@@ -34,13 +34,18 @@ module Crosswords
     # config.i18n.default_locale = :de
 
     # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = "utf-8"
+    config.encoding = 'utf-8'
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
     # Enable the asset pipeline
     config.assets.enabled = true
+
+    fb_app_id = ENV['FB_APP_ID'] || '133075676730741'
+    fb_secret = ENV['FB_SECRET'] || 'a0b890b1d884000ad6505a7b7390c611'
+    config.middleware.use OmniAuth::Strategies::Facebook, fb_app_id, fb_secret,
+      :scope => '' # just need to authenticate
 
     config.to_prepare do
       load 'crosswords/parser.rb'

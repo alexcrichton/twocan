@@ -11,4 +11,15 @@ class ApplicationController < ActionController::Base
     request.format.to_s =~ /html/
   end
 
+  def current_authentication
+    return @current_authentication if defined?(@current_authentication)
+    @current_authentication = Authentication.where(
+      :_id => session[:authentication]).first
+  end
+
+  def current_authentication= authentication
+    @current_authentication = authentication
+    session[:authentication] = authentication.id
+  end
+
 end

@@ -20,6 +20,8 @@ gem 'pusher'
 gem 'thin'
 gem 'em-http-request'
 
+gem 'oa-oauth'
+
 group :production do
   gem 'dalli'
   gem 'therubyracer-heroku', '0.8.1.pre3'

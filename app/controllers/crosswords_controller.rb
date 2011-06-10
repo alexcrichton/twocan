@@ -4,7 +4,10 @@ class CrosswordsController < ApplicationController
   before_filter :find_crossword, :only => [:show, :destroy]
 
   def index
-    @crosswords = Crossword.where :session_token => session[:token]
+    tokens = [session[:token]]
+    tokens << current_authentication.token if current_authentication
+    @crosswords = Crossword.where :session_token.in => tokens.uniq
+
     @crossword  = Crossword.new
     respond_with @crosswords
   end
@@ -33,7 +36,6 @@ class CrosswordsController < ApplicationController
   end
 
   def destroy
-    @crossword = Crossword.find(params[:id])
     @crossword.destroy
 
     respond_with :crosswords
