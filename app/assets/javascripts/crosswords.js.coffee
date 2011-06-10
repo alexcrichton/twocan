@@ -2,6 +2,7 @@
 #= require crosswords/storage
 #= require_self
 #= require crosswords/collaborate
+#= require crosswords/reveal
 
 # Represents a crossword to be done.
 #

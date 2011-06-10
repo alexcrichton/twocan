@@ -1,7 +1,5 @@
 #crossword {
-  position: fixed;
-  top: 65px;
-  right: 20px;
+  float: right;
 
   .cell {
     display: inline;
@@ -30,11 +28,11 @@
   }
 }
 
+.functions { float: right; }
+
 .info {
-  position: fixed;
-  top: 5px;
   margin: 0;
-  right: 20px;
+  float: right;
 
   dl { overflow: auto; }
   dt {
