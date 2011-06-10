@@ -1,7 +1,6 @@
 class Crossword
   class ParseError < StandardError; end
   class ChecksumError < StandardError; end
-  class CompatibilityError < StandardError; end
 
   class Section < Struct.new(:title, :length, :cksum, :data)
     attr_accessor :title, :length, :cksum, :data
@@ -54,8 +53,6 @@ class Crossword
     #
     # @raise [ParseError] if the stream given is not a valid crossword file
     # @raise [ChecksumError] if the checksums given in the stream do not match
-    # @raise [CompatibilityError] if the version of the crossword file is not
-    #     supported yet by this class
     def parse! io
       io = StringIO.new(io) if io.is_a?(String)
       io = io.binmode unless io.binmode?
@@ -69,7 +66,7 @@ class Crossword
       @masked_high_cksum = io.read(0x4).unpack('C4')
 
       version = io.read(0x4).unpack('Z3').first
-      raise CompatibilityError.new('Must be v1.2') unless version == '1.2'
+      Rails.logger.warn "Crossword is #{version}, not 1.2"
 
       _garbage   = io.read(0x2)
       @sol_cksum = io.read(0x2).unpack('v').first
