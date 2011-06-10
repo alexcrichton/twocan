@@ -1,12 +1,11 @@
 <%= form_for @crossword do |f| %>
   <%= render 'error_messages', :target => @crossword %>
 
-  <div class="field">
-    <%= f.label :binary_file %><br />
+  <div class="fileinputs">
     <%= f.file_field :binary_file %>
   </div>
 
   <div class="actions">
-    <%= f.submit %>
+    <%#= f.submit %>
   </div>
 <% end %>

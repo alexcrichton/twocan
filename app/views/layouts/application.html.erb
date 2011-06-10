@@ -14,16 +14,17 @@
   <body>
 
     <header>
-      <h1><%= link_to 'TwoCan', root_path %></h1>
+      <h1>TwoCan</h1>
 
       <nav>
-        <%= link_to 'Your Crosswords', crosswords_path %>
-        <%= link_to 'New Crossword', new_crossword_path %>
+        <%= nav_link 'Your Crosswords', crosswords_path %>
+        <%= nav_link 'New Crossword', new_crossword_path %>
       </nav>
     </header>
 
     <div id='main' data-pjax-container>
       <%= yield %>
+      <div class='overlay'></div>
     </div>
 
   </body>

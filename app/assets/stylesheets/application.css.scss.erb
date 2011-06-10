@@ -1,0 +1,82 @@
+//= require_self
+//= require_tree .
+
+html { height: 100%; }
+body {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  margin: 0;
+  height: 100%;
+}
+
+header {
+  float: left;
+  background: black;
+  height: 100%;
+  width: 200px;
+
+  h1 {
+    margin: 30px 10px 80px 10px;
+    color: white;
+    font-size: 40px;
+  }
+
+  nav a {
+    display: inline-block;
+    text-align: right;
+    position: relative;
+
+    font-size: 16px;
+    height: 38px;
+    padding-top: 12px;
+
+    width: 172px;
+    padding-right: 25px;
+
+    outline: 1px solid #ddd;
+    border: 1px solid #fff;
+    background: #f0f0f0;
+
+    text-decoration: none;
+    color: black;
+
+    &:hover {
+      outline: 1px solid #111;
+      border: 1px solid #555;
+    	background: #aaa;
+    }
+
+    .arrow {
+      position: absolute;
+      right: 0;
+      top: 10px;
+      border-width: 15px 15px 15px 0;
+      border-style: solid;
+      border-color: transparent black transparent;
+    }
+  }
+}
+
+#main {
+  float: left;
+  padding: 10px;
+}
+
+.overlay {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  background: black;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+.overlay-loading {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-image: url(<%= asset_path 'ajax-loader-large.gif' %>);
+  background-repeat: no-repeat;
+  background-size: 100px;
+}
