@@ -4,7 +4,8 @@ class CrosswordsController < ApplicationController
   before_filter :find_crossword, :only => [:show, :destroy]
 
   def index
-    @crosswords = Crossword.all
+    @crosswords = Crossword.where :session_token => session[:token]
+    @crossword  = Crossword.new
     respond_with @crosswords
   end
 
@@ -25,6 +26,7 @@ class CrosswordsController < ApplicationController
 
   def create
     @crossword = Crossword.new(params[:crossword])
+    @crossword.session_token = session[:token]
     @crossword.save
 
     respond_with @crossword

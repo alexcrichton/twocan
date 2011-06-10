@@ -11,6 +11,8 @@ class Crossword
   field :solution
   field :clues, :type => Array
   field :slug
+  field :session_token
+
   index :slug
 
   before_validation :set_slug_if_blank
