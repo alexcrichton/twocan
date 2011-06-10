@@ -102,6 +102,8 @@ GEM
       faraday (~> 0.6.1)
       multi_json (>= 0.0.5)
     orm_adapter (0.0.5)
+    pjax_rails (0.1.6)
+      jquery-rails
     polyglot (0.3.1)
     pusher (0.8.1)
       crack (~> 0.1.0)
@@ -178,6 +180,7 @@ DEPENDENCIES
   jquery-rails
   mongoid
   oa-oauth
+  pjax_rails
   pusher
   rails (= 3.1.0.rc2)
   sass-rails (~> 3.1.0.rc)

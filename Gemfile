@@ -24,6 +24,8 @@ gem 'oa-oauth'
 gem 'cancan'
 gem 'devise'
 
+gem 'pjax_rails'
+
 group :production do
   gem 'dalli'
   gem 'therubyracer-heroku', '0.8.1.pre3'

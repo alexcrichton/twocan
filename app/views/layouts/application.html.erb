@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Crosswords</title>
-  <%= csrf_meta_tags %>
+  <head>
+    <title>Crosswords</title>
+    <%= csrf_meta_tags %>
+    <%= favicon_link_tag %>
 
-  <%= stylesheet_link_tag 'application' %>
-  <%= yield :stylesheets %>
-  <%= javascript_include_tag 'application' %>
-  <%= yield :javascripts %>
-</head>
-<body>
+    <%= stylesheet_link_tag 'application' %>
+    <%= yield :stylesheets %>
+    <%= javascript_include_tag 'application' %>
+    <%= yield :javascripts %>
+  </head>
 
-<%= yield %>
+  <body>
 
-</body>
+    <header>
+      <h1><%= link_to 'TwoCan', root_path %></h1>
+
+      <nav>
+        <%= link_to 'Your Crosswords', crosswords_path %>
+        <%= link_to 'New Crossword', new_crossword_path %>
+      </nav>
+    </header>
+
+    <div id='main' data-pjax-container>
+      <%= yield %>
+    </div>
+
+  </body>
 </html>
