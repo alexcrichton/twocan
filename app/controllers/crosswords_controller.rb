@@ -4,7 +4,6 @@ class CrosswordsController < ApplicationController
   load_and_authorize_resource :find_by => :slug
 
   def index
-    @crossword  = Crossword.new
     @crosswords = @crosswords.where :session_token => session[:token]
     respond_with @crosswords
   end

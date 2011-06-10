@@ -2,9 +2,14 @@
 #= require jquery_ujs
 #= require pjax
 
+$(document).bind 'pageChanged', ->
+  console.log 'here'
+  $('nav .arrow').remove()
+  $('nav a').each (_, el) ->
+    if window.location.href == el.href
+      $(el).append($('<div>').addClass('arrow'))
+
 jQuery ->
-  $('nav .current').append($('<div>').addClass('arrow'))
-  
   $(document).bind 'start.pjax', ->
     hwidth = $('header').width()
     overlay = $('<div>').addClass('overlay')
@@ -17,7 +22,3 @@ jQuery ->
     
     loading.css 'left', (overlay.width() - loading.width()) / 2 + hwidth
     loading.css 'top', (overlay.height() - loading.height()) / 2
-
-  $('nav a').click ->
-    $('nav .arrow').remove()
-    $(this).append($('<div>').addClass('arrow'))
