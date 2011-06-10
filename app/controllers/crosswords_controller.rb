@@ -5,8 +5,7 @@ class CrosswordsController < ApplicationController
 
   def index
     @crossword  = Crossword.new
-    @crosswords = Crossword.where(
-      :session_token => current_user.try(:token) || session[:token])
+    @crosswords = Crossword.where :session_token => session[:token]
     respond_with @crosswords
   end
 
