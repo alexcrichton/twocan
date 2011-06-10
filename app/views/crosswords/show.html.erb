@@ -2,6 +2,26 @@
   <%= javascript_include_tag 'crosswords' %>
 <% end %>
 
+<div id='clues'>
+  <div id='across' class='clues'>
+    <h2>Across</h2>
+    <ol>
+      <% @crossword.clues.across.each do |c| %>
+        <li value="<%= c.number %>"><%= c.text %></li>
+      <% end %>
+    </ol>
+  </div>
+
+  <div id='down' class='clues'>
+    <h2>Down</h2>
+    <ol>
+      <% @crossword.clues.down.each do |c| %>
+        <li value="<%= c.number %>"><%= c.text %></li>
+      <% end %>
+    </ol>
+  </div>
+</div>
+
 <dl class='info'>
   <dt>Title</dt>
   <dd><%= @crossword.title %></dd>
@@ -11,29 +31,11 @@
   <dd><%= @crossword.copyright %></dd>
 </dl>
 
-<div id='across' class='clues'>
-  <h2>Across</h2>
-  <ol>
-    <% @crossword.clues.across.each do |c| %>
-      <li value="<%= c.number %>"><%= c.text %></li>
-    <% end %>
-  </ol>
-</div>
-
-<div id='down' class='clues'>
-  <h2>Down</h2>
-  <ol>
-    <% @crossword.clues.down.each do |c| %>
-      <li value="<%= c.number %>"><%= c.text %></li>
-    <% end %>
-  </ol>
-</div>
-
 <%= content_tag :div, :id => 'crossword',
       :data => {:crossword => @crossword, :id => @crossword.id.to_s} do %>
   <span>Crossword loading...</span>
 <% end %>
 
-<div class='functions'>
+<div class='reveal'>
   <%= link_to 'Reveal letter', '#', :class => 'letter' %>
 </div>
