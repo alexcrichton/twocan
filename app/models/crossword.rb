@@ -24,6 +24,10 @@ class Crossword
 
   embeds_many :clues
 
+  def binary_data= data
+    super BSON::Binary.new(data)
+  end
+
   def binary_file_is_valid
     return unless @binary_file.present?
     self[:binary_data] = nil
@@ -42,7 +46,7 @@ class Crossword
     self.clues = parser.clues
 
     file.rewind
-    self[:binary_data] = file.read
+    self.binary_data = file.read
   rescue Crosswords::ParseError, Crosswords::ChecksumError => e
     errors[:binary_file] << 'is an invalid crossword file.'
   end

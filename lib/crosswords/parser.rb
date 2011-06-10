@@ -79,7 +79,6 @@ module Crosswords
       @solution = Grid.new(self).tap{ |g| g.parse! io }
       @progress = Grid.new(self).tap{ |g| g.parse! io }
 
-      io.set_encoding('iso-8859-1')
       @title     = readline io
       @author    = readline io
       @copyright = readline io
@@ -106,11 +105,13 @@ module Crosswords
     # we need to read a specific number of bytes, but the 'read' method doesn't
     # raise EOFError, it just returns nil
     def readline io
-      line = ''
-      while (c = io.sysread(0x1)) != "\x00"
-        line << c 
+      ''.tap do |string|
+        while (c = io.sysread(0x1)) != "\x00"
+          string << c
+        end
+        string.force_encoding('iso-8859-1')
+        string.encode! 'utf-8'
       end
-      line
     end
 
     # Process all of the clues to figure out where they go on the grid and what
