@@ -7,10 +7,4 @@ class HomeController < ApplicationController
     render :json => response
   end
 
-  def push
-    response = Pusher[params[:channel]].trigger_async(params[:event],
-      params[:data])
-    render :json => response
-  end
-
 end
