@@ -11,6 +11,7 @@ class Crossword
   field :solution
   field :clues, :type => Array
   field :slug
+  index :slug
 
   before_validation :set_slug_if_blank
   validate :binary_file_is_valid
