@@ -1,21 +1,57 @@
-#= require collaborate
 #= require jquery/scrollto
+#= require crosswords/storage
+#= require_self
+#= require crosswords/collaborate
 
+# Represents a crossword to be done.
+#
+# The crossword's container emits events when they happen. You can bind to them
+# with jQuery. Each is described below with the event name, description of what
+# it does, and then the data that the event object has.
+#
+#   crossword:loaded => the crossword has been set up and loaded. Ready for play
+#     no data
+#
+#   crossword:new-letter => a new letter has been typed
+#     row: (integer) row of letter
+#     col: (integer) column of letter
+#     letter: (string) typed letter
+#
+#   crossword:remove-letter => a new letter has been removed
+#     row: (integer) row of letter
+#     col: (integer) column of letter
+#
+#   crossword:clue-solved => a clue has been solved (it might not be right)
+#     primary: (clue) clue that was solved in the selected direction
+#     secondary: (clue) clue, if any, that was solved in the non-selecte dir
+#
+#   crossword:clue-unsolved => a clue has been unsolved
+#     arguments are same as clue-solved, except they're clues that were unsolved
+#
+#   crossword:word-selected => a new word has been selected
+#     primary: (clue) same as clue-solved, but clue that is selected
+#     secondary: (clue) same as clue-solved, but clue that is selected
+#     row: (integer) row of cursor
+#     col: (integer) column of cursor
+#     direction: (string) either 'across' or 'down', current direction
 class Crossword
   @ALPHA: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-  constructor: (@data) ->
-    @solution = []
-    @grid = []
+  constructor: (data) ->
+    @solution  = []
+    @grid      = []
     @direction = 'across'
-    @row = 0
-    @col = 0
+    @row       = 0
+    @col       = 0
+    @height    = data.height
+    @width     = data.width
+    @clues     = data.clues
 
-    for i in [0...@data.height]
+    for i in [0...@height]
       @grid[i] = []
       @solution[i] = []
-      for j in [0...@data.width]
-        @solution[i][j] = @data.solution.charAt(i * @data.width + j)
+      for j in [0...@width]
+        @solution[i][j] = data.solution.charAt(i * @width + j)
         @grid[i][j] = $('<input>').prop('type', 'text').addClass('cell')
 
         if @solution[i][j] == '.'
@@ -109,7 +145,7 @@ class Crossword
   # Tests whether a (row, col) combination point to a valid location in the
   # grid. A valid location is within bounds and also not a black square
   valid_cell: (row, col) ->
-    0 <= col < @data.width && 0 <= row < @data.height &&
+    0 <= col < @width && 0 <= row < @height &&
       !@grid[row][col].prop('disabled')
 
   # Conditionally goes to the next cell, using the specified delta distances
@@ -119,8 +155,8 @@ class Crossword
   next_cell: (dx, dy, skip_over_black = false) ->
     newcol = @col + dx
     newrow = @row + dy
-    while skip_over_black && 0 <= newcol < @data.width &&
-        0 <= newrow < @data.height &&
+    while skip_over_black && 0 <= newcol < @width &&
+        0 <= newrow < @height &&
         @grid[newrow][newcol].prop('disabled')
       newcol += dx
       newrow += dy
@@ -180,7 +216,7 @@ class Crossword
     down_number   = parseInt @grid[row][orig_col].siblings('span').text(), 10
     clues = {}
 
-    for clue in @data.clues
+    for clue in @clues
       if clue.direction == 'across' && clue.number == across_number
         if @direction == 'across'
           clues.primary = clue
@@ -209,8 +245,8 @@ class Crossword
   # Base the current selected box of the crossword on an input element. The
   # input should be a jQuery element
   select_input: (input) ->
-    for i in [0...@data.height]
-      for j in [0...@data.width]
+    for i in [0...@height]
+      for j in [0...@width]
         if @grid[i][j].get(0) == input.get(0)
           if i == @row && j == @col
             return @invert_direction()
@@ -220,9 +256,39 @@ class Crossword
   # Base the current selected box in the crossword on a clue. The clue is
   # specified by its number and its direction.
   select_clue: (number, direction) ->
-    for clue in @data.clues
+    for clue in @clues
       if clue.number == number and clue.direction == direction
         return @select(clue.row, clue.column, clue.direction)
+
+  # Serialize the progress of this crossword into a string. The string will
+  # have height * width characters and will represent the grid traversed from
+  # left to right and top to bottom. A '.' means a black square, a '-' means
+  # a blank square, and a letter means that that's been typed in
+  progress: ->
+    progress = ''
+    for row in @grid
+      for input in row
+        if input.is(':disabled')
+          progress += '.'
+        else if input.val() == ''
+          progress += '-'
+        else
+          progress += input.val()
+
+    progress
+
+  # Load a serialized crossword's progress into this crossword.
+  #
+  # @param [String] progress a string generated by #progress previously
+  load_progress: (progress) ->
+    for row in @grid
+      for input in row
+        char = progress.charAt 0
+        progress = progress.substring 1
+        switch char
+          when '.' then continue
+          when '-' then input.val('')
+          else input.val(char)
 
   # Setup the given container to be a crossword. All of the event handlers are
   # installed here. This assumes that jQuery is available
@@ -240,7 +306,7 @@ class Crossword
 
     # Now go back and replace all inputs which are the start of clues with a
     # wrapper so we can fit in a span with the number of the clue
-    for clue in @data.clues
+    for clue in @clues
       input = @grid[clue.row][clue.column]
       continue if input.parent().hasClass('cell') # already marked?
 
@@ -261,6 +327,8 @@ class Crossword
     @container.find('span').click (event) =>
       @select_input $(event.currentTarget).siblings('input')
 
+    @container.trigger 'crossword:loaded'
+
 jQuery ->
   # Helper function to run a callback on each clue from an event created
   # by the crossword. The three arguments to the callback are:
@@ -278,8 +346,6 @@ jQuery ->
   # Actually get this crossword's information
   # $.getJSON '/crosswords/' + $('#crossword').data('id'), (data) ->
   container = $('#crossword')
-  window.crossword = new Crossword(container.data('crossword'))
-  crossword.setup container
 
   # When the word selection changes, change how the clue looks in the lists
   container.bind 'crossword:word-selected', (_, clues) ->
@@ -289,7 +355,7 @@ jQuery ->
     each_clue clues, (clue, primary, selector) ->
       element = $(selector)
       element.addClass(if primary then 'selected' else 'semi-selected')
-      element.closest('ol').scrollTo element, 200
+      # element.closest('ol').scrollTo element, 200
 
   # When words are solved/unsolved, update classes appropriately
   container.bind 'crossword:clue-unsolved', (_, clues) ->
@@ -302,3 +368,6 @@ jQuery ->
     type   = $(this).closest('.clues').prop('id')
     number = $(this).prop('value')
     crossword.select_clue number, type
+
+  window.crossword = new Crossword(container.data('crossword'))
+  crossword.setup container
