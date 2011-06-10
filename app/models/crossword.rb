@@ -16,8 +16,8 @@ class Crossword
   before_validation :set_slug_if_blank
   validate :binary_file_is_valid
   validates_uniqueness_of :slug
-  validates_presence_of :binary_data, :width, :height, :solution, :clues
 
+  attr_accessible :binary_file
   attr_accessor :binary_file
 
   embeds_many :clues
@@ -41,7 +41,7 @@ class Crossword
 
     file.rewind
     self[:binary_data] = file.read
-  rescue ParseError, ChecksumError, CompatibilityError => e
+  rescue Crosswords::ParseError, Crosswords::ChecksumError => e
     errors[:binary_file] << 'is an invalid crossword file.'
   end
 

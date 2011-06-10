@@ -2,28 +2,28 @@ module Crosswords
   class ParseError < StandardError; end
   class ChecksumError < StandardError; end
 
-  class Section < Struct.new(:title, :length, :cksum, :data)
+  class Section
     attr_accessor :title, :length, :cksum, :data
 
     def self.parse! io
-      Section.new.tap do |s|
-        s.title  = io.read(0x4)
-        s.length = io.read(0x2).unpack('v').first
-        s.cksum  = io.read(0x2).unpack('v').first
-        s.data   = io.read(s.length)
+      self.new.tap do |s|
+        s.title  = io.sysread(0x4)
+        s.length = io.sysread(0x2).unpack('v').first
+        s.cksum  = io.sysread(0x2).unpack('v').first
+        s.data   = io.sysread(s.length)
 
-        raise ParseError unless io.readbyte == 0
+        raise ParseError unless io.sysread(0x1) == "\x00"
       end
     end
   end
 
-  class Grid < Struct.new(:crossword)
+  class Grid
     def initialize crossword
       @crossword = crossword
     end
 
     def parse! io
-      @board = io.read(@crossword.width * @crossword.height).chars.to_a
+      @board = io.sysread(@crossword.width * @crossword.height).chars.to_a
     end
 
     def to_s
@@ -41,7 +41,6 @@ module Crosswords
   end
 
   class Parser
-    NUL = "\x00".freeze
     attr_accessor :width, :height, :solution, :progress, :title, :author,
       :copyright, :clues, :sections, :notes
 
@@ -57,46 +56,62 @@ module Crosswords
       io = StringIO.new(io) if io.is_a?(String)
       io = io.binmode unless io.binmode?
 
-      @cksum    = io.read(0x2).unpack('v').first
-      magic     = io.read(0xc).unpack('Z11').first
+      @cksum    = io.sysread(0x2).unpack('v').first
+      magic     = io.sysread(0xc).unpack('Z11').first
       raise ParseError if magic != 'ACROSS&DOWN'
 
-      @cib_cksum = io.read(0x2).unpack('v').first
-      @masked_low_cksum  = io.read(0x4).unpack('C4')
-      @masked_high_cksum = io.read(0x4).unpack('C4')
+      @cib_cksum = io.sysread(0x2).unpack('v').first
+      @masked_low_cksum  = io.sysread(0x4).unpack('C4')
+      @masked_high_cksum = io.sysread(0x4).unpack('C4')
 
-      version = io.read(0x4).unpack('Z3').first
+      version = io.sysread(0x4).unpack('Z3').first
       Rails.logger.warn "Crossword is #{version}, not 1.2"
 
-      _garbage   = io.read(0x2)
-      @sol_cksum = io.read(0x2).unpack('v').first
-      _garbage   = io.read(0xc)
-      @width     = io.read(0x1).unpack('C').first
-      @height    = io.read(0x1).unpack('C').first
-      num_clues  = io.read(0x2).unpack('v').first
-      _garbage   = io.read(0x2)
-      @scrambled = io.read(0x2).unpack('v').first
+      _garbage   = io.sysread(0x2)
+      @sol_cksum = io.sysread(0x2).unpack('v').first
+      _garbage   = io.sysread(0xc)
+      @width     = io.sysread(0x1).unpack('C').first
+      @height    = io.sysread(0x1).unpack('C').first
+      num_clues  = io.sysread(0x2).unpack('v').first
+      _garbage   = io.sysread(0x2)
+      @scrambled = io.sysread(0x2).unpack('v').first
 
       @solution = Grid.new(self).tap{ |g| g.parse! io }
       @progress = Grid.new(self).tap{ |g| g.parse! io }
 
       io.set_encoding('iso-8859-1')
-      @title     = io.readline(NUL).chomp(NUL)
-      @author    = io.readline(NUL).chomp(NUL)
-      @copyright = io.readline(NUL).chomp(NUL)
+      @title     = readline io
+      @author    = readline io
+      @copyright = readline io
 
       @unprocessed_clues = []
-      num_clues.times { @unprocessed_clues << io.readline(NUL).chomp(NUL) }
-      @notes = io.readline(NUL).chomp(NUL)
+      num_clues.times { @unprocessed_clues << readline(io) }
+      @notes = readline io
 
       @sections = []
       @sections << Section.parse!(io) while !io.eof?
 
       validate io
       process_clues
+      true
+    rescue EOFError, SystemCallError, IOError => e
+      raise ParseError
     end
 
     protected
+
+    # You can't mix calls to sysread and readline on an IO object, so we have
+    # to have our own custom 'readline' method. It was chosen to use all sysread
+    # calls because they will all raise EOFError. Otherwise, there's many places
+    # we need to read a specific number of bytes, but the 'read' method doesn't
+    # raise EOFError, it just returns nil
+    def readline io
+      line = ''
+      while (c = io.sysread(0x1)) != "\x00"
+        line << c 
+      end
+      line
+    end
 
     # Process all of the clues to figure out where they go on the grid and what
     # the number of each clue should be
@@ -157,10 +172,10 @@ module Crosswords
 
       @unprocessed_clues.each_with_index { |c, i|
         ck = cksum io, c.length, ck
-        raise ParseError if io.getbyte != 0
+        raise ParseError unless io.sysread(0x1) == "\x00"
       }
 
-      io.readline(NUL) # skip note
+      readline(io) # skip note
 
       raise ChecksumError if ck != @cksum
 
@@ -168,7 +183,7 @@ module Crosswords
       @sections.each { |section|
         io.seek 0x8, IO::SEEK_CUR # skip title, length, checksum
         raise ChecksumError if cksum(io, section.length) != section.cksum
-        raise ParseError unless io.readbyte == 0
+        raise ParseError unless io.sysread(0x1) == "\x00"
       }
 
       # Now finally validate the masked checksums
@@ -181,7 +196,7 @@ module Crosswords
       c_part = cksum io, @copyright.length + 1, c_part
       @unprocessed_clues.each_with_index { |c, i|
         c_part = cksum io, c.length, c_part
-        raise ParseError if io.getbyte != 0
+        raise ParseError unless io.sysread(0x1) == "\x00"
       }
 
       raise ChecksumError if \
@@ -204,9 +219,9 @@ module Crosswords
     #
     # @return [Integer] the checksum of the bytes
     def cksum io, len, sum = 0
-      len.times{
+      io.sysread(len).bytes.each { |byte|
         sum = sum & 0x1 == 1 ? (sum >> 1) + 0x8000 : sum >> 1;
-        sum += io.readbyte
+        sum += byte
         sum &= 0xffff
       }
 
