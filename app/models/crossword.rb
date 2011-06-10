@@ -10,9 +10,12 @@ class Crossword
   field :height, :type => Integer
   field :solution
   field :clues, :type => Array
+  field :slug
 
+  before_validation :set_slug_if_blank
   validate :binary_file_is_valid
-  # validates_presence_of :binary_data, :width, :height, :solution
+  validates_uniqueness_of :slug
+  validates_presence_of :binary_data, :width, :height, :solution, :clues
 
   attr_accessor :binary_file
 
@@ -23,7 +26,7 @@ class Crossword
     self[:binary_data] = nil
 
     file   = @binary_file.open
-    parser = Parser.new.tap{ |p| p.parse! file.binmode }
+    parser = Crosswords::Parser.new.tap{ |p| p.parse! file.binmode }
 
     self[:title]     = parser.title
     self[:author]    = parser.author
@@ -41,8 +44,13 @@ class Crossword
     errors[:binary_file] << 'is an invalid crossword file.'
   end
 
-  def to_puz
-    raise 'Not implemented yet!'
+  alias :to_puz :binary_data
+  alias :to_param :slug
+
+  protected
+
+  def set_slug_if_blank
+    self[:slug] ||= SecureRandom.hex(10)
   end
 
 end

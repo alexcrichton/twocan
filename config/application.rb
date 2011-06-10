@@ -43,7 +43,7 @@ module Crosswords
     config.assets.enabled = true
 
     config.to_prepare do
-      require 'crossword/parser'
+      require 'crosswords/parser'
     end
   end
 end

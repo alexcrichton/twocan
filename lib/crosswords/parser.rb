@@ -1,4 +1,4 @@
-class Crossword
+module Crosswords
   class ParseError < StandardError; end
   class ChecksumError < StandardError; end
 

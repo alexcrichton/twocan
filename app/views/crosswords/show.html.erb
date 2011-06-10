@@ -32,7 +32,7 @@
 </dl>
 
 <%= content_tag :div, :id => 'crossword',
-      :data => {:crossword => @crossword, :id => @crossword.id.to_s} do %>
+      :data => {:crossword => @crossword, :id => @crossword.slug} do %>
   <span>Crossword loading...</span>
 <% end %>
 
