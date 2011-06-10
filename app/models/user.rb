@@ -1,5 +1,7 @@
-class Authentication
+class User
   include Mongoid::Document
+
+  devise :rememberable
 
   field :provider
   field :uid

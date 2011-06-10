@@ -21,6 +21,8 @@ gem 'thin'
 gem 'em-http-request'
 
 gem 'oa-oauth'
+gem 'cancan'
+gem 'devise'
 
 group :production do
   gem 'dalli'

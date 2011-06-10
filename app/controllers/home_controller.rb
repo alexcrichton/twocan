@@ -1,5 +1,6 @@
 class HomeController < ApplicationController
 
+  include Devise::Controllers::Rememberable
   skip_filter :verify_authenticity_token, :only => :pusher_auth
 
   def pusher_auth
@@ -8,21 +9,23 @@ class HomeController < ApplicationController
   end
 
   def omniauth
-    self.current_authentication = Authentication.find_or_initialize_by(
+    user = User.find_or_initialize_by(
       :provider => env['omniauth.auth']['provider'],
       :uid      => env['omniauth.auth']['uid']
     )
 
-    current_authentication.token ||= session[:token]
-    current_authentication.save!
+    user.token ||= session[:token]
+    user.save!
 
     # If we created some crosswords, and then logged in to a previously created
     # account, then we should take ownership of all the crosswords
     Crossword.where(:session_token => session[:token]).
-      update_all(:session_token => current_authentication.token)
+      update_all(:session_token => user.token)
 
-    flash[:notice] = 'Logged in!'
-    redirect_to root_path
+    flash[:notice]  = 'Logged in!'
+    session[:token] = user.token
+    remember_me user
+    sign_in_and_redirect user
   end
 
 end
