@@ -393,4 +393,6 @@ window.setup_crossword = (container) ->
     crossword.select_clue number, type
 
   window.crossword = new Crossword(container.data('crossword'))
+  setup_storage container
   crossword.setup container
+  establish_channel container
