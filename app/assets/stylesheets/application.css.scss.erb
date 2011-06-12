@@ -1,7 +1,7 @@
 //= require_self
 //= require_tree .
 
-html { height: 100%; }
+html { height: 100%; width: 100%; }
 body {
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 13px;
@@ -13,6 +13,7 @@ body {
 
 header {
   background: #6B95B1;
+  position: relative;
 
   h1 {
     color: white;
@@ -72,6 +73,13 @@ header {
   background-size: 100px;
 }
 
+.user-info {
+  color: white;
+  font-size: 16px;
+
+  img { vertical-align:middle; }
+}
+
 /******************************************************************************/
 /* Variable sizes */
 /******************************************************************************/
@@ -86,7 +94,7 @@ header {
     overflow: auto;
     width: 100%;
 
-    h1 { margin: 0; float: left; }
+    h1 { margin: 0 0 0 10px; float: left; }
     nav { float: right; }
     nav a {
       clear: both;
@@ -97,12 +105,20 @@ header {
       .arrow { border-width: 5px 5px 5px 0; }
     }
   }
+
+  .user-info {
+    margin-left: 10px;
+    width: 200px;
+    float: left;
+  }
+
 }
 
 @media screen and (min-width: 1040px) {
   #main {
     width: 85%;
     height: 100%;
+    padding-top: 0;
     border-left: 1px solid black;
   }
 
@@ -122,6 +138,14 @@ header {
 
       .arrow { border-width: 15px 15px 15px 0; }
     }
+  }
+
+  .user-info {
+    width: auto;
+    margin: 0;
+    position: absolute;
+    bottom: 100px;
+    right: 0;
   }
 }
 

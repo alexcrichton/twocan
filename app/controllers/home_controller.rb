@@ -9,12 +9,14 @@ class HomeController < ApplicationController
   end
 
   def omniauth
+    auth = env['omniauth.auth']
     user = User.find_or_initialize_by(
-      :provider => env['omniauth.auth']['provider'],
-      :uid      => env['omniauth.auth']['uid']
+      :provider => auth['provider'],
+      :uid      => auth['uid']
     )
 
     user.token ||= session[:token]
+    user.email ||= auth['email'] || auth['user_info']['email']
     user.save!
 
     # If we created some crosswords, and then logged in to a previously created

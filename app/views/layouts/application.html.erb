@@ -2,6 +2,10 @@
 <html>
   <head>
     <title>Crosswords</title>
+    <meta property="og:title" content="TwoCan - Collaborative Crosswords" />
+    <meta property="og:type" content="game" />
+    <meta property="og:url" content="http://<%= request.host_with_port %>" />
+    <meta property="og:site_name" content="TwoCan" />
     <%= csrf_meta_tags %>
     <%= favicon_link_tag %>
 
@@ -10,16 +14,31 @@
     <%= javascript_include_tag 'application' %>
     <%= yield :javascripts %>
   </head>
-
   <body>
 
     <header>
-      <h1>TwoCan</h1>
+      <h1>
+        TwoCan
+        <fb:like send="false" layout="button_count" width="100"
+                 show_faces="false"
+                 href="http://<%= request.host_with_port %>">
+        </fb:like>
+      </h1>
 
       <nav>
         <%= link_to 'Your Crosswords', crosswords_path %>
         <%= link_to 'New Crossword', new_crossword_path %>
       </nav>
+
+      <div class='user-info'>
+        <% if current_user %>
+          Logged in with: <%= current_user.email %>
+        <% else %>
+          Log in with:
+          <%= link_to image_tag('facebook.png'), '/auth/facebook',
+                :'data-skip-pjax' => true %>
+        <% end %>
+      </div>
     </header>
 
     <%= yield :flash %>
@@ -27,6 +46,9 @@
     <div id='main' data-pjax-container>
       <%= yield %>
     </div>
+
+    <div id="fb-root"></div>
+    <script src="<%= request.protocol %>connect.facebook.net/en_US/all.js#appId=217774374920081&amp;xfbml=1"></script>
 
   </body>
 </html>
