@@ -2,7 +2,7 @@
   <div class='flash error'><%= @crossword.errors.full_messages.join ',' %></div>
 <% end if @crossword.errors.any? %>
 
-<%= form_for @crossword do |f| %>
+<%= form_for @crossword, :remote => true do |f| %>
   <div class="file-input">
     <%= f.file_field :crossword_file %>
 

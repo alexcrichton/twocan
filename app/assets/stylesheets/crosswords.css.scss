@@ -224,7 +224,7 @@ form {
   border-top: 1px solid #96d1f8;
   padding: 8px 17px;
 
-  @include linear-gradient(color_stops(#3e779d, #65a9d7), top);
+  @include background-image(linear-gradient(top, #3e779d, #65a9d7));
   @include border-radius(5px);
   @include box-shadow(rgba(0,0,0,1) 0 1px 0);
 

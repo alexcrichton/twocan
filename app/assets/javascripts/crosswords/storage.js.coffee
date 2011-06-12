@@ -16,7 +16,7 @@ window.setup_storage = (container) ->
     catch err
       undefined
 
-  container.bind 'crossword:loaded', ->
+  container.bind 'loaded.crossword', ->
     selection = get 'selection'
     if selection
       crossword.select selection.row, selection.col, selection.dir
@@ -24,9 +24,9 @@ window.setup_storage = (container) ->
     if progress
       crossword.load_progress progress
 
-  container.bind 'crossword:new-letter', ->
+  container.bind 'new-letter.crossword', ->
     set 'progress', crossword.progress()
-  container.bind 'crossword:remove-letter', ->
+  container.bind 'remove-letter.crossword', ->
     set 'progress', crossword.progress()
-  container.bind 'crossword:word-selected', (_, data) ->
+  container.bind 'word-selected.crossword', (_, data) ->
     set 'selection', {row: data.row, col: data.col, dir: data.direction}

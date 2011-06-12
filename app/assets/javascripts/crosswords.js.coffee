@@ -10,26 +10,26 @@
 # with jQuery. Each is described below with the event name, description of what
 # it does, and then the data that the event object has.
 #
-#   crossword:loaded => the crossword has been set up and loaded. Ready for play
+#   loaded => the crossword has been set up and loaded. Ready for play
 #     no data
 #
-#   crossword:new-letter => a new letter has been typed
+#   new-letter => a new letter has been typed
 #     row: (integer) row of letter
 #     col: (integer) column of letter
 #     letter: (string) typed letter
 #
-#   crossword:remove-letter => a new letter has been removed
+#   remove-letter => a new letter has been removed
 #     row: (integer) row of letter
 #     col: (integer) column of letter
 #
-#   crossword:clue-solved => a clue has been solved (it might not be right)
+#   clue-solved => a clue has been solved (it might not be right)
 #     primary: (clue) clue that was solved in the selected direction
 #     secondary: (clue) clue, if any, that was solved in the non-selecte dir
 #
-#   crossword:clue-unsolved => a clue has been unsolved
+#   clue-unsolved => a clue has been unsolved
 #     arguments are same as clue-solved, except they're clues that were unsolved
 #
-#   crossword:word-selected => a new word has been selected
+#   word-selected => a new word has been selected
 #     primary: (clue) same as clue-solved, but clue that is selected
 #     secondary: (clue) same as clue-solved, but clue that is selected
 #     row: (integer) row of cursor
@@ -96,7 +96,7 @@ class Crossword
       @grid[row][col].val(character)
       @grid[row][col].removeClass('wrong')
       if local_event
-        @container.trigger 'crossword:new-letter',
+        @container.trigger 'new-letter',
           row: @row
           col: @col
           letter: character
@@ -104,7 +104,7 @@ class Crossword
       completed = {}
       completed.primary   = clues.primary   if @clue_finished clues.primary
       completed.secondary = clues.secondary if @clue_finished clues.secondary
-      @container.trigger 'crossword:clue-solved', completed
+      @container.trigger 'clue-solved', completed
 
     # Move the cursor if we can (only local events)
     if local_event
@@ -142,9 +142,9 @@ class Crossword
 
     if @grid[row][col].val() != ''
       @grid[row][col].val('')
-      @container.trigger 'crossword:clue-unsolved', @get_clues(row, col)
+      @container.trigger 'clue-unsolved', @get_clues(row, col)
       if local_event
-        @container.trigger 'crossword:remove-letter', row: row, col: col
+        @container.trigger 'remove-letter', row: row, col: col
 
   # Tests whether a (row, col) combination point to a valid location in the
   # grid. A valid location is within bounds and also not a black square
@@ -206,7 +206,7 @@ class Crossword
     event.col = @col
     event.direction = @direction
 
-    @container.trigger 'crossword:word-selected', event
+    @container.trigger 'word-selected', event
 
   # Get the two relevant clues (if there are two) for the selected row and
   # columnt. The object returned has a 'primary' and 'secondary' key where the
@@ -354,7 +354,7 @@ class Crossword
     @container.find('span').click (event) =>
       @select_input $(event.currentTarget).siblings('input')
 
-    @container.trigger 'crossword:loaded'
+    @container.trigger 'loaded'
 
 window.setup_crossword = (container) ->
   # Helper function to run a callback on each clue from an event created
@@ -371,7 +371,7 @@ window.setup_crossword = (container) ->
           ' li[value=' + clues.secondary.number + ']'
 
   # When the word selection changes, change how the clue looks in the lists
-  container.bind 'crossword:word-selected', (_, clues) ->
+  container.bind 'word-selected.crossword', (_, clues) ->
     $('li.selected').removeClass('selected')
     $('li.semi-selected').removeClass('semi-selected')
 
@@ -381,9 +381,9 @@ window.setup_crossword = (container) ->
       element.closest('ol').scrollTo element, 100
 
   # When words are solved/unsolved, update classes appropriately
-  container.bind 'crossword:clue-unsolved', (_, clues) ->
+  container.bind 'clue-unsolved.crossword', (_, clues) ->
     each_clue clues, (_, _, selector) -> $(selector).removeClass('solved')
-  container.bind 'crossword:clue-solved', (_, clues) ->
+  container.bind 'clue-solved.crossword', (_, clues) ->
     each_clue clues, (_, _, selector) -> $(selector).addClass('solved')
 
   # Click a clue to get to the cells where it's located
@@ -392,7 +392,10 @@ window.setup_crossword = (container) ->
     number = $(this).prop('value')
     crossword.select_clue number, type
 
+  # Actually set up the crossword now
   window.crossword = new Crossword(container.data('crossword'))
   setup_storage container
   crossword.setup container
   establish_channel container
+
+  $(document).one 'start.pjax', -> container.unbind('.crossword')

@@ -13,7 +13,7 @@
       <td><%= crossword.copyright %></td>
       <td>
         <%= link_to 'Destroy', crossword, confirm: 'Are you sure?',
-              method: :delete %>
+              method: :delete, remote: true %>
       </td>
     </tr>
   <% end %>

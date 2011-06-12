@@ -21,15 +21,24 @@ class CrosswordsController < ApplicationController
 
   def create
     @crossword.session_token = session[:token]
-    @crossword.save
 
-    respond_with @crossword
+    if @crossword.save
+      redirect_pjax_to :show, @crossword
+    else
+      # render create.js.erb (respond_with @crossword doesn't work?!)
+    end
   end
 
   def destroy
     @crossword.destroy
 
-    respond_with :crosswords
+    respond_with @crossword do |format|
+      format.js {
+        # set the objects needed for rendering index
+        @crosswords = Crossword.where :session_token => session[:token]
+        redirect_pjax_to :index
+      }
+    end
   end
 
 end

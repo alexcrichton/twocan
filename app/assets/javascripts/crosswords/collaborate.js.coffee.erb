@@ -5,11 +5,11 @@ window.establish_channel = (container) ->
   channel = window.pusher.subscribe 'private-' + container.data('id')
 
   container = $('#crossword')
-  container.bind 'crossword:word-selected', (_, data) ->
+  container.bind 'word-selected.crossword', (_, data) ->
     channel.trigger 'client-word-selected', data
-  container.bind 'crossword:new-letter', (_, data) ->
+  container.bind 'new-letter.crossword', (_, data) ->
     channel.trigger 'client-new-letter', data
-  container.bind 'crossword:remove-letter', (_, data) ->
+  container.bind 'remove-letter.crossword', (_, data) ->
     channel.trigger 'client-remove-letter', data
 
   channel.bind 'client-word-selected', (data) ->
@@ -26,3 +26,5 @@ window.establish_channel = (container) ->
     row = parseInt(data.row, 10)
     col = parseInt(data.col, 10)
     window.crossword.backspace row, col, false
+
+  $(document).one 'start.pjax', -> channel.disconnect()
