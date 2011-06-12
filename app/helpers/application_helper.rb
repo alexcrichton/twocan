@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   def page_title
-    if @crossword
+    if @crossword && @crossword.title.present?
       @crossword.title + " | TwoCan"
     else
       "TwoCan - Collaborative Crosswords"
