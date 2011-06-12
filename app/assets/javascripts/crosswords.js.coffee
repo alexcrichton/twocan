@@ -380,6 +380,8 @@ window.setup_crossword = (container) ->
       element.addClass(if primary then 'selected' else 'semi-selected')
       element.closest('ol').scrollTo element, 100
 
+      $('.current-clue').text clue.text if primary
+
   # When words are solved/unsolved, update classes appropriately
   container.bind 'clue-unsolved.crossword', (_, clues) ->
     each_clue clues, (_, _, selector) -> $(selector).removeClass('solved')
@@ -397,5 +399,6 @@ window.setup_crossword = (container) ->
   setup_storage container
   crossword.setup container
   establish_channel container
+  container.prepend $('<div>', class: 'current-clue')
 
   $(document).one 'start.pjax', -> container.unbind('.crossword')

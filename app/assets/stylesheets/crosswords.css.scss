@@ -58,6 +58,16 @@ body { overflow: auto; }
   .semi-selected { border: 1px solid #aaa; }
 }
 
+.current-clue {
+  text-align: center;
+  font-size: 16px;
+  padding: 5px;
+  font-weight: bold;
+  width: 80%;
+  margin: 0 auto;
+  clear: both;
+}
+
 /******************************************************************************/
 /* Index view */
 /******************************************************************************/
