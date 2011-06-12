@@ -35,8 +35,7 @@
           Logged in with: <%= current_user.email %>
         <% else %>
           Log in with:
-          <%= link_to image_tag('facebook.png'), '/auth/facebook',
-                :'data-skip-pjax' => true %>
+          <%= link_to image_tag('facebook.png'), '/auth/facebook' %>
         <% end %>
       </div>
     </header>

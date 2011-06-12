@@ -63,6 +63,8 @@ body { overflow: auto; }
 /******************************************************************************/
 
 #crosswords {
+  width: 100%;
+
   th, td {
     margin: 0;
     padding: 4px;
@@ -73,6 +75,11 @@ body { overflow: auto; }
 
   th { border-bottom: 2px solid black; }
   td { border-bottom: 1px solid black; }
+}
+
+.crosswords-links {
+  width: 300px;
+  margin: 20px auto 0 auto;
 }
 
 /******************************************************************************/
@@ -209,25 +216,29 @@ form {
 
   .button {
     margin-left: -8px;
-    border-top: 1px solid #96d1f8;
-    padding: 8px 17px;
+    @include border-left-radius(0);
+  }
+}
 
-    @include linear-gradient(color_stops(#3e779d, #65a9d7), top);
-    @include border-right-radius(5px);
-    @include box-shadow(rgba(0,0,0,1) 0 1px 0);
+.button {
+  border-top: 1px solid #96d1f8;
+  padding: 8px 17px;
 
-    color: white;
-    text-decoration: none;
+  @include linear-gradient(color_stops(#3e779d, #65a9d7), top);
+  @include border-radius(5px);
+  @include box-shadow(rgba(0,0,0,1) 0 1px 0);
 
-    &:hover {
-      border-top-color: #28597a;
-      background: #28597a;
-      color: #ccc;
-    }
+  color: white;
+  text-decoration: none;
 
-    &:active {
-      border-top-color: #1b435e;
-      background: #1b435e;
-    }
+  &:hover {
+    border-top-color: #28597a;
+    background: #28597a;
+    color: #ccc;
+  }
+
+  &:active {
+    border-top-color: #1b435e;
+    background: #1b435e;
   }
 }

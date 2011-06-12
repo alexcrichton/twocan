@@ -13,16 +13,13 @@ $(document).bind 'pageChanged', ->
 
 # When pjax starts, show the overlay with an ajax loader in the middle
 $(document).bind 'start.pjax', ->
-  hwidth = $('header').width()
   overlay = $('<div>').addClass('overlay')
-  overlay.width($(document).width() - hwidth)
-  overlay.css('left', $('header').width())
   loading = $('<div>').addClass('overlay-loading')
 
   $('#main').append(overlay)
   $('#main').append(loading)
 
-  loading.css 'left', (overlay.width() - loading.width()) / 2 + hwidth
+  loading.css 'left', (overlay.width() - loading.width()) / 2
   loading.css 'top', (overlay.height() - loading.height()) / 2
 
 window.flash_message = (klass, message) ->
