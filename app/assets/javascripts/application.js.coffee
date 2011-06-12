@@ -23,11 +23,13 @@ $(document).bind 'start.pjax', ->
   loading.css 'left', (overlay.width() - loading.width()) / 2
   loading.css 'top', (overlay.height() - loading.height()) / 2
 
+# Helper for showing flash messages
 window.flash = (klass, message) ->
   flash = $('<div>').addClass('flash').addClass(klass).html(message).hide()
   $(document.body).append(flash)
   flash.slideDown()
   setTimeout (-> flash.slideUp -> flash.remove()), 4000
 
+# Hide all flash 4 seconds after the page loads
 jQuery ->
   setTimeout (-> $('.flash').slideUp -> $(this).remove()), 4000

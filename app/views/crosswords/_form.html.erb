@@ -1,7 +1,3 @@
-<% provide :flash do %>
-  <div class='flash error'><%= @crossword.errors.full_messages.join ',' %></div>
-<% end if @crossword.errors.any? %>
-
 <%= form_for @crossword, :remote => true do |f| %>
   <div class="file-input">
     <%= f.file_field :crossword_file %>
@@ -23,7 +19,7 @@
 
       <p>These can be downloaded from various crossword applications</p>
 
-      <p>The New York Times refers to these as 'AcrossLite' files</p>
+      <p>The New York Times refers to these as 'Across Lite' files</p>
     </div>
   </div>
 <% end %>
