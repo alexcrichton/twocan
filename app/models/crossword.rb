@@ -40,7 +40,9 @@ class Crossword
     end
     self[:binary_data] = nil
 
-    file   = @crossword_file.open
+    file   = @crossword_file.respond_to?(:open) ?
+      @crossword_file.open :
+      @crossword_file
     parser = Crosswords::Parser.new
     parser.parse! file
 
