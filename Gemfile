@@ -26,7 +26,6 @@ gem 'cancan'
 gem 'devise'
 
 group :production do
-  gem 'thin'
   gem 'dalli'
   gem 'therubyracer-heroku', '0.8.1.pre3'
 end
