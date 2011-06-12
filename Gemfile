@@ -15,19 +15,18 @@ gem 'coffee-script'
 gem 'uglifier'
 gem 'compass'
 
+# JS niceties
 gem 'jquery-rails'
+gem 'pjax_rails'
 
 gem 'pusher'
-gem 'thin'
-gem 'em-http-request'
 
 gem 'oa-oauth'
 gem 'cancan'
 gem 'devise'
 
-gem 'pjax_rails'
-
 group :production do
+  gem 'thin'
   gem 'dalli'
   gem 'therubyracer-heroku', '0.8.1.pre3'
 end

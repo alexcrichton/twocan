@@ -65,12 +65,7 @@ GEM
       bcrypt-ruby (~> 2.1.2)
       orm_adapter (~> 0.0.3)
       warden (~> 1.0.3)
-    em-http-request (0.3.0)
-      addressable (>= 2.0.0)
-      escape_utils
-      eventmachine (>= 0.12.9)
     erubis (2.7.0)
-    escape_utils (0.2.3)
     eventmachine (0.12.10)
     execjs (1.1.1)
       multi_json (~> 1.0)
@@ -187,7 +182,6 @@ DEPENDENCIES
   compass
   dalli
   devise
-  em-http-request
   heroku
   jquery-rails
   mongoid
