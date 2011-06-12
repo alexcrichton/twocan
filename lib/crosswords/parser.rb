@@ -64,10 +64,7 @@ module Crosswords
       @masked_low_cksum  = io.sysread(0x4).unpack('C4')
       @masked_high_cksum = io.sysread(0x4).unpack('C4')
 
-      version = io.sysread(0x4).unpack('Z3').first
-      unless version == '1.2'
-        Rails.logger.warn "Crossword is #{version}, not 1.2"
-      end
+      @version = io.sysread(0x4).unpack('Z3').first
 
       _garbage   = io.sysread(0x2)
       @sol_cksum = io.sysread(0x2).unpack('v').first
@@ -90,7 +87,7 @@ module Crosswords
       @notes = readline io
 
       @sections = []
-      @sections << Section.parse!(io) while !io.eof?
+      loop { @sections << Section.parse!(io) } rescue EOFError
 
       validate io
       process_clues
@@ -162,7 +159,7 @@ module Crosswords
     # @param [IO] io the I/O object which is read from
     def validate io
       # Initially validate the CIB checksum
-      io.seek 0x2c # start of the CIB header
+      io.sysseek 0x2c # start of the CIB header
       raise ChecksumError if @cib_cksum != cksum(io, 8)
 
       # Now validate the entire puzzle checksum
@@ -172,25 +169,30 @@ module Crosswords
       ck = cksum io, @title.length + 1, ck
       ck = cksum io, @author.length + 1, ck
       ck = cksum io, @copyright.length + 1, ck
-
       @unprocessed_clues.each_with_index { |c, i|
         ck = cksum io, c.length, ck
         raise ParseError unless io.sysread(0x1) == "\x00"
       }
 
-      readline(io) # skip note
+      # In version 1.2, notes are skipped in checksums. In version 1.3, only
+      # 0-length notes are skipped
+      if @version == '1.3' && @notes.length > 0
+        ck = cksum io, @notes.length + 1, ck
+      else
+        readline(io) # Skip the notes
+      end
 
       raise ChecksumError if ck != @cksum
 
       # Now validate each of the checksums of the sections
       @sections.each { |section|
-        io.seek 0x8, IO::SEEK_CUR # skip title, length, checksum
+        io.sysseek 0x8, IO::SEEK_CUR # skip title, length, checksum
         raise ChecksumError if cksum(io, section.length) != section.cksum
         raise ParseError unless io.sysread(0x1) == "\x00"
       }
 
       # Now finally validate the masked checksums
-      io.seek 0x34 # Start of the solution grids
+      io.sysseek 0x34 # Start of the solution grids
       c_sol  = cksum io, @width * @height
       c_grid = cksum io, @width * @height
 
@@ -201,6 +203,10 @@ module Crosswords
         c_part = cksum io, c.length, c_part
         raise ParseError unless io.sysread(0x1) == "\x00"
       }
+      # See above comment for conditional check here
+      if @version == '1.3' && @notes.length > 0
+        c_part = cksum io, @notes.length + 1, c_part
+      end
 
       raise ChecksumError if \
         @masked_low_cksum[0] != (0x49 ^ (@cib_cksum & 0xff)) ||
