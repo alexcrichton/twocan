@@ -45,7 +45,7 @@ module Crosswords
     fb_app_id = ENV['FB_APP_ID'] || '133075676730741'
     fb_secret = ENV['FB_SECRET'] || 'a0b890b1d884000ad6505a7b7390c611'
     config.middleware.use OmniAuth::Strategies::Facebook, fb_app_id, fb_secret,
-      :scope => '' # just need to authenticate
+      :scope => 'email' # just need to authenticate
 
     # Stupid hack to prevent this from showing up in middleware
     require 'sass/plugin/rack'
