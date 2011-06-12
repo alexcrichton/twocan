@@ -356,7 +356,7 @@ class Crossword
 
     @container.trigger 'crossword:loaded'
 
-jQuery ->
+window.setup_crossword = (container) ->
   # Helper function to run a callback on each clue from an event created
   # by the crossword. The three arguments to the callback are:
   #  1. the clue object
@@ -369,10 +369,6 @@ jQuery ->
     if clues.secondary
       fn clues.secondary, false, '#' + clues.secondary.direction +
           ' li[value=' + clues.secondary.number + ']'
-
-  # Actually get this crossword's information
-  # $.getJSON '/crosswords/' + $('#crossword').data('id'), (data) ->
-  container = $('#crossword')
 
   # When the word selection changes, change how the clue looks in the lists
   container.bind 'crossword:word-selected', (_, clues) ->

@@ -1,9 +1,7 @@
-jQuery ->
+window.setup_storage = (container) ->
   return unless window.localStorage
 
-  container = $('#crossword')
-
-  window.identifier = 'crossword-saved-' + container.data('id')
+  identifier = 'crossword-saved-' + container.data('id')
   set = (key, value) ->
     try
       hash = JSON.parse(localStorage[identifier])

@@ -16,11 +16,11 @@ class Crossword
   index :slug
 
   before_validation :set_slug_if_blank
-  validate :binary_file_is_valid
+  validate :crossword_file_is_valid
   validates_uniqueness_of :slug
 
-  attr_accessible :binary_file
-  attr_accessor :binary_file
+  attr_accessible :crossword_file
+  attr_accessor :crossword_file
 
   embeds_many :clues
 
@@ -33,11 +33,14 @@ class Crossword
     super BSON::Binary.new(data)
   end
 
-  def binary_file_is_valid
-    return unless @binary_file.present?
+  def crossword_file_is_valid
+    if new_record? && @crossword_file.nil?
+      errors[:crossword_file] << 'is required'
+      return
+    end
     self[:binary_data] = nil
 
-    file   = @binary_file.open
+    file   = @crossword_file.open
     parser = Crosswords::Parser.new.tap{ |p| p.parse! file.binmode }
 
     self[:title]     = parser.title
@@ -53,7 +56,7 @@ class Crossword
     file.rewind
     self.binary_data = file.read
   rescue Crosswords::ParseError, Crosswords::ChecksumError => e
-    errors[:binary_file] << 'is an invalid crossword file.'
+    errors[:crossword_file] << 'is an invalid crossword file.'
   end
 
   alias :to_puz :binary_data

@@ -47,6 +47,10 @@ module Crosswords
     config.middleware.use OmniAuth::Strategies::Facebook, fb_app_id, fb_secret,
       :scope => '' # just need to authenticate
 
+    # Stupid hack to prevent this from showing up in middleware
+    require 'sass/plugin/rack'
+    config.middleware.delete Sass::Plugin::Rack
+
     config.to_prepare do
       load 'crosswords/parser.rb'
     end

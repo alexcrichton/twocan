@@ -10,9 +10,10 @@ gem 'bson_ext'
 gem 'mongoid'
 
 # Asset template engines
-gem 'sass-rails', '~> 3.1.0.rc'
+gem 'sass-rails', :git => 'git://github.com/rails/sass-rails'
 gem 'coffee-script'
 gem 'uglifier'
+gem 'compass'
 
 gem 'jquery-rails'
 

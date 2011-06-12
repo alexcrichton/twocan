@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   before_filter :ensure_session_token
   before_filter :ensure_authenticity_token
+
   protect_from_forgery
   stream :if => :html_request?
 

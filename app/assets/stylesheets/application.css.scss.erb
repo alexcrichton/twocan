@@ -8,43 +8,35 @@ body {
   line-height: 18px;
   margin: 0;
   height: 100%;
+  background: #E9F1FF;
 }
 
 header {
-  float: left;
-  background: black;
-  height: 100%;
-  width: 200px;
+  background: #6B95B1;
 
   h1 {
-    margin: 30px 10px 80px 10px;
     color: white;
     font-size: 40px;
+    line-height: 40px;
   }
 
   nav a {
     display: inline-block;
     text-align: right;
     position: relative;
+    float: right;
 
-    font-size: 16px;
-    height: 38px;
-    padding-top: 12px;
-
-    width: 172px;
-    padding-right: 25px;
-
-    outline: 1px solid #ddd;
-    border: 1px solid #fff;
+    outline: 1px solid #B1B1B1;
+    border: 1px solid #CCC;
     background: #f0f0f0;
 
     text-decoration: none;
     color: black;
 
     &:hover {
-      outline: 1px solid #111;
+      outline: 1px solid #444;
       border: 1px solid #555;
-    	background: #aaa;
+      background: #aaa;
     }
 
     .arrow {
@@ -60,7 +52,6 @@ header {
 
 #main {
   float: left;
-  padding: 10px;
 }
 
 .overlay {
@@ -79,4 +70,61 @@ header {
   background-image: url(<%= asset_path 'ajax-loader-large.gif' %>);
   background-repeat: no-repeat;
   background-size: 100px;
+}
+
+/******************************************************************************/
+/* Variable sizes */
+/******************************************************************************/
+
+@media screen {
+  #main {
+    width: 100%;
+    padding-top: 10px;
+  }
+
+  header {
+    overflow: auto;
+    width: 100%;
+
+    h1 { margin: 0; float: left; }
+    nav { float: right; }
+    nav a {
+      clear: both;
+      width: 150px;
+      padding: 5px 10px 5px 5px;
+      font-size: 12px;
+
+      .arrow { border-width: 5px 5px 5px 0; }
+    }
+  }
+}
+
+@media screen and (min-width: 1040px) {
+  #main {
+    width: 85%;
+    height: 100%;
+    border-left: 1px solid black;
+  }
+
+  header {
+    float: left;
+    height: 100%;
+    width: 15%;
+
+    h1 { margin: 30px 10px 80px 10px; font-size: 30px; }
+    nav { overflow: hidden; width: 100%; }
+    nav a {
+      font-size: 16px;
+      height: 38px;
+      padding-top: 12px;
+      padding-right: 25px;
+      width: 100%;
+
+      .arrow { border-width: 15px 15px 15px 0; }
+    }
+  }
+}
+
+@media screen and (min-width: 1250px) {
+  header h1 { font-size: 40px; }
 }

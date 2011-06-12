@@ -1,3 +1,5 @@
+@import "compass/css3";
+
 body { overflow: auto; }
 
 #crossword {
@@ -125,12 +127,12 @@ body { overflow: auto; }
   #crossword { float: right; clear: none; }
   .functions { float: right; clear: right; }
 
-  #clues { width: 30%; }
+  #clues { width: 30%; margin-left: 10px; }
   .clues {
     clear: left;
     width: 100%;
 
-    ol { max-height: 330px; }
+    ol { max-height: 300px; }
   }
 }
 
@@ -139,6 +141,10 @@ body { overflow: auto; }
 }
 
 @media screen and (min-width: 1040px) {
+  #clues { width: 30%; }
+}
+
+@media screen and (min-width: 1175px) {
   #clues {
     width: 45%;
     clear: none;
@@ -147,17 +153,10 @@ body { overflow: auto; }
   .clues {
     float: left;
     clear: none;
-    width: 50%;
+    width: 47%;
+    margin-right: 10px;
 
     ol { max-height: 700px; }
-  }
-}
-
-@media screen and (min-width: 1140px) {
-  #clues { width: 50%; }
-  .clues {
-    margin-right: 10px;
-    width: 47%;
   }
 }
 
@@ -165,7 +164,70 @@ body { overflow: auto; }
 /* Form styling */
 /******************************************************************************/
 form {
+  .file-input {
+    margin: 0 auto;
+    width: 395px;
+    margin-top: 200px;
+    position: relative;
+  }
+
+  .help {
+    text-align: center;
+    width: 400px;
+    margin: 0 auto;
+    a { display: block; }
+
+    .info {
+      display: none;
+      text-align: left;
+      clear: left;
+      float: left;
+    }
+  }
+
+  .actions {
+    width: 200px;
+    margin: 0 auto;
+
+    .button { @include border-radius(5px); border: none; cursor: pointer; }
+  }
+
   input[type=file] {
-    font-size: 30px;
+    opacity: 0;
+    position: absolute;
+  }
+
+  input[type=text] {
+    padding: 8px 3px;
+    @include border-left-radius(5px);
+  }
+
+  input[type=text], .button {
+    font-size: 23px;
+    vertical-align: middle;
+  }
+
+  .button {
+    margin-left: -8px;
+    border-top: 1px solid #96d1f8;
+    padding: 8px 17px;
+
+    @include linear-gradient(color_stops(#3e779d, #65a9d7), top);
+    @include border-right-radius(5px);
+    @include box-shadow(rgba(0,0,0,1) 0 1px 0);
+
+    color: white;
+    text-decoration: none;
+
+    &:hover {
+      border-top-color: #28597a;
+      background: #28597a;
+      color: #ccc;
+    }
+
+    &:active {
+      border-top-color: #1b435e;
+      background: #1b435e;
+    }
   }
 }

@@ -1,8 +1,8 @@
 #= require pusher
 
-jQuery ->
-  pusher = new Pusher('<%= Pusher.key %>')
-  channel = pusher.subscribe 'private-' + $('#crossword').data('id')
+window.establish_channel = (container) ->
+  window.pusher ||= new Pusher('<%= Pusher.key %>')
+  channel = window.pusher.subscribe 'private-' + container.data('id')
 
   container = $('#crossword')
   container.bind 'crossword:word-selected', (_, data) ->

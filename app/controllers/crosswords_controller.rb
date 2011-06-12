@@ -11,10 +11,7 @@ class CrosswordsController < ApplicationController
   def show
     respond_with @crossword do |format|
       format.json
-      format.puz {
-        send_data @crossword.to_puz, :type => Mime['puz'].to_s,
-          :filename => 'crossword.puz'
-      }
+      format.puz
     end
   end
 

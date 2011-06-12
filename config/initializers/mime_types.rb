@@ -5,3 +5,9 @@
 # Mime::Type.register_alias "text/html", :iphone
 
 Mime::Type.register_alias 'application/x-crossword', :puz
+
+ActionController::Renderers.add :puz do |obj, options|
+  filename = options[:filename] || 'crossword.puz'
+  str = obj.respond_to?(:to_csv) ? obj.to_csv : obj.to_s
+  send_data str, :type => Mime::PUZ
+end

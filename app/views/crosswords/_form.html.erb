@@ -1,11 +1,29 @@
-<%= form_for @crossword do |f| %>
-  <%= render 'error_messages', :target => @crossword %>
+<% provide :flash do %>
+  <div class='flash error'><%= @crossword.errors.full_messages.join ',' %></div>
+<% end if @crossword.errors.any? %>
 
-  <div class="fileinputs">
-    <%= f.file_field :binary_file %>
+<%= form_for @crossword do |f| %>
+  <div class="file-input">
+    <%= f.file_field :crossword_file %>
+
+    <%= text_field_tag :file, 'Choose a file', :readonly => true %>
+    <%= link_to 'Browse...', '#', :class => 'button',
+          :'data-skip-pjax' => true %>
   </div>
 
   <div class="actions">
-    <%#= f.submit %>
+    <%= f.submit :class => 'button', :disable_with => 'Uploading...' %>
+  </div>
+
+  <div class='help'>
+    <%= link_to 'What do I upload?', '#', :'data-skip-pjax' => true %>
+
+    <div class='info'>
+      <p>You need to upload a '.puz' file</p>
+
+      <p>These can be downloaded from various crossword applications</p>
+
+      <p>The New York Times refers to these as 'AcrossLite' files</p>
+    </div>
   </div>
 <% end %>

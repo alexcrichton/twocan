@@ -22,9 +22,10 @@
       </nav>
     </header>
 
+    <%= yield :flash %>
+
     <div id='main' data-pjax-container>
       <%= yield %>
-      <div class='overlay'></div>
     </div>
 
   </body>

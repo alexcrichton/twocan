@@ -65,7 +65,9 @@ module Crosswords
       @masked_high_cksum = io.sysread(0x4).unpack('C4')
 
       version = io.sysread(0x4).unpack('Z3').first
-      Rails.logger.warn "Crossword is #{version}, not 1.2"
+      unless version == '1.2'
+        Rails.logger.warn "Crossword is #{version}, not 1.2"
+      end
 
       _garbage   = io.sysread(0x2)
       @sol_cksum = io.sysread(0x2).unpack('v').first

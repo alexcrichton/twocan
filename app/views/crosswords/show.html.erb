@@ -37,7 +37,14 @@
 <% end %>
 
 <div class='functions'>
-  <%= link_to 'Reveal letter', '#', :class => 'reveal-letter' %> |
-  <%= link_to 'Check puzzle', '#', :class => 'check-puzzle' %> |
-  <%= link_to 'Clear puzzle', '#', :class => 'clear-puzzle' %>
+  <%= link_to 'Reveal letter', '#', :class => 'reveal-letter',
+        :'data-skip-pjax' => true %> |
+  <%= link_to 'Check puzzle', '#', :class => 'check-puzzle',
+        :'data-skip-pjax' => true %> |
+  <%= link_to 'Clear puzzle', '#', :class => 'clear-puzzle',
+        :'data-skip-pjax' => true %>
 </div>
+
+<script type='text/javascript'>
+  $(function() { setup_crossword($('#crossword')); });
+</script>
