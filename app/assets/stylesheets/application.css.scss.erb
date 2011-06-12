@@ -97,6 +97,7 @@ header {
     overflow: auto;
     width: 100%;
 
+    img { display: none; }
     h1 { margin: 0 0 0 10px; float: left; }
     nav { float: right; }
     nav a {
@@ -125,11 +126,13 @@ header {
   }
 
   header {
+    overflow: visible;
     float: left;
     height: 100%;
     width: 15%;
 
-    h1 { margin: 30px 10px 80px 10px; font-size: 30px; }
+    img { display: block; }
+    h1 { margin: 30px 10px 0 10px; font-size: 30px; }
     nav { overflow: hidden; width: 100%; }
     nav a {
       font-size: 16px;

@@ -41,7 +41,8 @@ class Crossword
     self[:binary_data] = nil
 
     file   = @crossword_file.open
-    parser = Crosswords::Parser.new.tap{ |p| p.parse! file.binmode }
+    parser = Crosswords::Parser.new
+    parser.parse! file
 
     self[:title]     = parser.title
     self[:author]    = parser.author
