@@ -8,7 +8,9 @@
 
   <% @crosswords.each do |crossword| %>
     <tr>
-      <td><%= link_to crossword.title, crossword %></td>
+      <td>
+        <%= link_to truncate(crossword.title, :length => 50), crossword %>
+      </td>
       <td><%= crossword.author %></td>
       <td><%= crossword.copyright %></td>
       <td>
@@ -18,6 +20,8 @@
     </tr>
   <% end %>
 </table>
+
+<%= paginate @crosswords %>
 
 <div class='crosswords-links'>
   <%= link_to 'Add Crossword', new_crossword_path, :class => 'button' %>

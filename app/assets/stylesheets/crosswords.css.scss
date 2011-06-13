@@ -87,6 +87,10 @@ body { overflow: auto; }
   td { border-bottom: 1px solid black; }
 }
 
+.pagination {
+  text-align: center;
+}
+
 .crosswords-links {
   width: 300px;
   margin: 20px auto 0 auto;
@@ -132,7 +136,7 @@ body { overflow: auto; }
     height: 30px;
   }
 
-  span { font-size: 8px; }
+  #crossword span { font-size: 8px; }
 }
 
 @media screen and (min-width: 800px) {

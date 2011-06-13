@@ -5,6 +5,8 @@ class CrosswordsController < ApplicationController
 
   def index
     @crosswords = @crosswords.where :session_token => session[:token]
+    @crosswords = @crosswords.searchq(params[:q]).order(:title.asc).
+      page(params[:page]).per(20)
     respond_with @crosswords
   end
 

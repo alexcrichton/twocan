@@ -24,6 +24,10 @@ class Crossword
 
   embeds_many :clues
 
+  scope :searchq, lambda { |query|
+    query.blank? ? scoped : where(:title => /#{query}/i)
+  }
+
   def self.find_by_slug! slug
     where(:slug => slug).first or raise Mongoid::Errors::DocumentNotFound.new(
       self, :slug => slug)
