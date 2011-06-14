@@ -47,7 +47,7 @@ class Crossword
     @height    = data.height
     @width     = data.width
     @clues     = data.clues
-    @sections  = data.sections
+    @sections  = data.sections || []
 
     for i in [0...@height]
       @grid[i] = []
