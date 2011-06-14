@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   stream :if => :html_request?
 
   def ensure_session_token
-    session[:token] ||= SecureRandom.hex(15)
+    session[:token] ||= current_user.try(:token) || SecureRandom.hex(15)
   end
 
   def ensure_authenticity_token
