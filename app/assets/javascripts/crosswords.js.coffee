@@ -47,16 +47,14 @@ class Crossword
     @height    = data.height
     @width     = data.width
     @clues     = data.clues
+    @sections  = data.sections
 
     for i in [0...@height]
       @grid[i] = []
       @solution[i] = []
       for j in [0...@width]
         @solution[i][j] = data.solution.charAt(i * @width + j)
-        @grid[i][j] = $('<input>').prop('type', 'text').addClass('cell')
-
-        if @solution[i][j] == '.'
-          @grid[i][j].addClass('black').prop('disabled', true)
+        @grid[i][j] = $('<input>').prop('type', 'text')
 
   # Handler for a keypress event anywhere in the crossword. This assumes that
   # the context of the function is the crossword object.
@@ -94,7 +92,7 @@ class Crossword
   insert_character: (character, row = @row, col = @col, local_event = true) ->
     if @grid[row][col].val() != character
       @grid[row][col].val(character)
-      @grid[row][col].removeClass('wrong')
+      @grid[row][col].parent().removeClass('wrong')
       if local_event
         @container.trigger 'new-letter',
           row: @row
@@ -180,9 +178,9 @@ class Crossword
     # Deselect everything first
     for r in @grid
       for input in r
-        input.removeClass(klass).removeClass(current_class)
+        input.parent().removeClass(klass).removeClass(current_class)
 
-    @grid[row][col].addClass(current_class)
+    @grid[row][col].parent().addClass(current_class)
 
     # Start initially at the cursor's location and move around from there
     dx = if dir == 'across' then -1 else 0
@@ -195,7 +193,7 @@ class Crossword
 
     # Now go forwards and mark each cell as selected
     while @valid_cell(row, col)
-      @grid[row][col].addClass(klass)
+      @grid[row][col].parent().addClass(klass)
       row -= dy
       col -= dx
 
@@ -306,7 +304,7 @@ class Crossword
         if @grid[i][j].val() == ''
           all_right = false
         else if @grid[i][j].val() != @solution[i][j]
-          @grid[i][j].addClass('wrong')
+          @grid[i][j].parent().addClass('wrong')
           all_right = false
 
     all_right
@@ -328,19 +326,29 @@ class Crossword
     for input_row in @grid
       row = $('<div>').addClass('row')
       for input in input_row
-        row.append input
+        cell = $('<div>').addClass('cell')
+        cell.append input
+        row.append cell
       @container.append row
 
     # Now go back and replace all inputs which are the start of clues with a
     # wrapper so we can fit in a span with the number of the clue
     for clue in @clues
       input = @grid[clue.row][clue.column]
-      continue if input.parent().hasClass('cell') # already marked?
+      continue if input.parent().find('span').length > 0 # already marked?
+      $('<span>').text(clue.number).insertAfter(input)
 
-      outer = $('<div>').addClass('cell')
-      outer.insertBefore(input)
-      outer.append(input.remove())
-      outer.append($('<span>').text(clue.number))
+    gext = null
+    for section in @sections
+      gext = section.data if section.title == 'GEXT'
+    for i in [0...@height]
+      for j in [0...@width]
+        # See http://code.google.com/p/puz/wiki/FileFormat
+        if gext && gext[i * @width + j] & 0x80
+          $('<div>', class: 'circle').insertAfter @grid[i][j]
+
+        if @solution[i][j] == '.'
+          @grid[i][j].prop('disabled', true).parent().addClass('black')
 
     # Now install the event handlers when we're done moving everything around
     for row in @grid
@@ -351,7 +359,7 @@ class Crossword
     @container.find('input').click (event) =>
       @select_input $(event.currentTarget)
     # In case you hit the span instead of the input, also focus the input
-    @container.find('span').click (event) =>
+    @container.find('span, .circle').click (event) =>
       @select_input $(event.currentTarget).siblings('input')
 
     @container.trigger 'loaded'
