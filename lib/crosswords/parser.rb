@@ -40,6 +40,14 @@ module Crosswords
     end
   end
 
+  class SysStringIO < StringIO
+    alias :sysseek :seek
+
+    def binmode?
+      true
+    end
+  end
+
   class Parser
     attr_accessor :width, :height, :solution, :progress, :title, :author,
       :copyright, :clues, :sections, :notes
@@ -53,7 +61,7 @@ module Crosswords
     # @raise [ParseError] if the stream given is not a valid crossword file
     # @raise [ChecksumError] if the checksums given in the stream do not match
     def parse! io
-      io = StringIO.new(io) if io.is_a?(String)
+      io = SysStringIO.new(io) if io.is_a?(String)
       io = io.binmode unless io.binmode?
 
       @cksum    = io.sysread(0x2).unpack('v').first

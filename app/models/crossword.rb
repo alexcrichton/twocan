@@ -23,6 +23,7 @@ class Crossword
   attr_accessor :crossword_file
 
   embeds_many :clues
+  embeds_many :sections
 
   scope :searchq, lambda { |query|
     query.blank? ? scoped : where(:title => /#{query}/i)
@@ -44,11 +45,27 @@ class Crossword
     end
     self[:binary_data] = nil
 
-    file   = @crossword_file.respond_to?(:open) ?
+    file = @crossword_file.respond_to?(:open) ?
       @crossword_file.open :
       @crossword_file
+
+    parse! file
+  rescue Crosswords::ParseError, Crosswords::ChecksumError => e
+    errors[:crossword_file] << 'is an invalid crossword file.'
+  end
+
+  def reparse!
+    parse! Crosswords::SysStringIO.new(binary_data.to_s)
+  end
+
+  alias :to_puz :binary_data
+  alias :to_param :slug
+
+  protected
+
+  def parse! io
     parser = Crosswords::Parser.new
-    parser.parse! file
+    parser.parse! io
 
     self[:title]     = parser.title
     self[:author]    = parser.author
@@ -58,18 +75,14 @@ class Crossword
     self[:height]    = parser.height
     self[:solution]  = parser.solution.to_s
 
-    self.clues = parser.clues
+    self.clues    = parser.clues
+    self.sections = parser.sections.map{ |s|
+      Section.new :title => s.title, :data => s.data
+    }
 
-    file.rewind
-    self.binary_data = file.read
-  rescue Crosswords::ParseError, Crosswords::ChecksumError => e
-    errors[:crossword_file] << 'is an invalid crossword file.'
+    io.rewind
+    self.binary_data = io.read
   end
-
-  alias :to_puz :binary_data
-  alias :to_param :slug
-
-  protected
 
   def set_slug_if_blank
     self[:slug] ||= SecureRandom.hex(10)
