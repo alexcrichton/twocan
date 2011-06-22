@@ -126,13 +126,17 @@ body { overflow: auto; }
     }
   }
 
-  #crossword { text-align: center; clear: left; }
-  .cell, input {
-    font-size: 18px;
-    width: 20px;
-    height: 20px;
+  #crossword {
+    text-align: center;
+    clear: left;
 
-    span { font-size: 6px; }
+    .cell, input {
+      font-size: 18px;
+      width: 20px;
+      height: 20px;
+
+      span { font-size: 6px; }
+    }
   }
 
   .circle {
@@ -149,10 +153,12 @@ body { overflow: auto; }
     li.solved { font-size: 12px; }
   }
 
-  .cell, input {
-    font-size: 25px;
-    width: 30px;
-    height: 30px;
+  #crossword {
+    .cell, input {
+      font-size: 25px;
+      width: 30px;
+      height: 30px;
+    }
   }
 
   .circle {
