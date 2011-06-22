@@ -39,8 +39,8 @@ class Crossword
   end
 
   def crossword_file_is_valid
-    if new_record? && @crossword_file.nil?
-      errors[:crossword_file] << 'is required'
+    if @crossword_file.nil?
+      errors[:crossword_file] << 'is required' if new_record?
       return
     end
     self[:binary_data] = nil
