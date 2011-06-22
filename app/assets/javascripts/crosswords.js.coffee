@@ -139,7 +139,7 @@ class Crossword
       col = @col
 
     if @grid[row][col].val() != ''
-      @grid[row][col].val('')
+      @grid[row][col].val('').removeClass('wrong')
       @container.trigger 'clue-unsolved', @get_clues(row, col)
       if local_event
         @container.trigger 'remove-letter', row: row, col: col
