@@ -30,3 +30,5 @@ window.setup_storage = (container) ->
     set 'progress', crossword.progress()
   container.bind 'word-selected.crossword', (_, data) ->
     set 'selection', {row: data.row, col: data.col, dir: data.direction}
+  container.bind 'remote-action.crossword', ->
+    set 'progress', crossword.progress()

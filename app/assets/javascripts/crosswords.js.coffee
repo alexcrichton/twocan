@@ -295,7 +295,7 @@ class Crossword
 
   # Check this puzzle's progress. Marks all cells which have values that are
   # wrong with the 'wrong' class
-  check: () ->
+  check: (trigger = true) ->
     all_right = true
 
     for i in [0...@height]
@@ -307,6 +307,7 @@ class Crossword
           @grid[i][j].parent().addClass('wrong')
           all_right = false
 
+    @container.trigger 'checked' if trigger
     all_right
 
   # Clear's all current progress with this crossword

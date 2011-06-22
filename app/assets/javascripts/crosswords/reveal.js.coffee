@@ -1,5 +1,6 @@
 jQuery ->
   $('.reveal-letter').live 'click', ->
+    console.log 'reveal'
     letter = crossword.solution[crossword.row][crossword.col]
     crossword.insert_character letter
     false
