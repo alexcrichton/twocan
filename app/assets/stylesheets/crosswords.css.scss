@@ -37,6 +37,8 @@ body { overflow: auto; }
   input { background: transparent; }
 }
 
+.functions { margin-bottom: 20px; }
+
 .info {
   margin: 0;
 
@@ -55,7 +57,7 @@ body { overflow: auto; }
 .clues {
   h2 { display: inline-block; }
 
-  ol { overflow: auto; }
+  ol { overflow: auto; margin-bottom: 0; }
 
   li {
     margin: 1px;
