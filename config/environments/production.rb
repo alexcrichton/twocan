@@ -13,9 +13,6 @@ Crosswords::Application.configure do
   # Compress JavaScripts and CSS
   config.assets.compress = true
 
-  # Specify the default JavaScript compressor
-  config.assets.js_compressor = :uglifier
-
   # Specifies the header that your server uses for sending files
   # (comment out if your front-end server doesn't support this)
   config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'
