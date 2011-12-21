@@ -13,7 +13,7 @@ gem 'mongoid'
 group :assets do
   gem 'sass-rails', '~> 3.2.0'
   gem 'coffee-script'
-  gem 'compass', '>= 0.12.alpha.0'
+  gem 'compass'
   gem 'uglifier'
 
   # JS niceties
@@ -32,4 +32,5 @@ gem 'kaminari'
 group :production do
   gem 'dalli'
   gem 'therubyracer-heroku', '0.8.1.pre3'
+  gem 'thin'
 end
