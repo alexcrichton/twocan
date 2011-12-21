@@ -5,9 +5,12 @@ require 'action_controller/railtie'
 require 'action_mailer/railtie'
 require 'active_resource/railtie'
 
-# If you have a Gemfile, require the gems listed there, including any gems
-# you've limited to :test, :development, or :production.
-Bundler.require(*Rails.groups(:assets)) if defined?(Bundler)
+if defined?(Bundler)
+  # If you precompile assets before deploying to production, use this line
+  Bundler.require(*Rails.groups(:assets => %w(development test)))
+  # If you want your assets lazily compiled in production, use this line
+  # Bundler.require(:default, :assets, Rails.env)
+end
 
 module Crosswords
   class Application < Rails::Application
@@ -41,6 +44,8 @@ module Crosswords
 
     # Enable the asset pipeline
     config.assets.enabled = true
+    # Version of your assets, change this if you want to expire all your assets
+    config.assets.version = '1.0'
 
     fb_app_id = ENV['FB_APP_ID'] || '133075676730741'
     fb_secret = ENV['FB_SECRET'] || 'a0b890b1d884000ad6505a7b7390c611'
