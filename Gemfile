@@ -4,16 +4,16 @@ group :useful do
   gem 'heroku', :require => false
 end
 
-gem 'rails', '3.1.0'
+gem 'rails', '3.2.0.rc1'
 
 gem 'bson_ext'
 gem 'mongoid'
 
 # Asset template engines
 group :assets do
-  gem 'sass-rails', '~> 3.1.0'
+  gem 'sass-rails', '~> 3.2.0'
   gem 'coffee-script'
-  gem 'compass'
+  gem 'compass', '>= 0.12.alpha.0'
   gem 'uglifier'
 
   # JS niceties
