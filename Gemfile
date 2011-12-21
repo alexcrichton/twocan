@@ -17,8 +17,9 @@ group :assets do
 
   # JS niceties
   gem 'jquery-rails'
-  gem 'pjax_rails'
 end
+
+gem 'pjax_rails'
 
 gem 'pusher'
 
