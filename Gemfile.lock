@@ -38,15 +38,10 @@ GEM
       bson (= 1.5.2)
     builder (3.0.0)
     cancan (1.6.7)
-    chunky_png (1.2.5)
     coffee-script (2.2.0)
       coffee-script-source
       execjs
     coffee-script-source (1.2.0)
-    compass (0.11.5)
-      chunky_png (~> 1.2)
-      fssm (>= 0.2.7)
-      sass (~> 3.1)
     daemons (1.1.5)
     dalli (1.1.4)
     devise (1.5.3)
@@ -61,7 +56,6 @@ GEM
       addressable (~> 2.2.6)
       multipart-post (~> 1.1.3)
       rack (>= 1.1.0, < 2)
-    fssm (0.2.7)
     heroku (2.17.0)
       launchy (>= 0.3.2)
       rest-client (~> 1.6.1)
@@ -177,7 +171,6 @@ DEPENDENCIES
   bson_ext
   cancan
   coffee-script
-  compass (~> 0.11.0)
   dalli
   devise
   heroku
