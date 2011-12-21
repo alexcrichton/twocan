@@ -1,6 +1,13 @@
-@import "compass/css3";
+/*@import "compass";*/
 
 body { overflow: auto; }
+
+@mixin border-radius($width) {
+  border-radius: $width;
+}
+@mixin border-left-radius($width) {
+  border-left-radius: $width;
+}
 
 #crossword {
   padding-right: 5px;
@@ -273,9 +280,8 @@ form {
   border-top: 1px solid #96d1f8;
   padding: 8px 17px;
 
-  @include background-image(linear-gradient(top, #3e779d, #65a9d7));
+  background: #3e779d;
   @include border-radius(5px);
-  @include box-shadow(rgba(0,0,0,1) 0 1px 0);
 
   color: white;
   text-decoration: none;

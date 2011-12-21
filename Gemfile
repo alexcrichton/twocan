@@ -13,7 +13,6 @@ gem 'mongoid'
 group :assets do
   gem 'sass-rails', '~> 3.2.0'
   gem 'coffee-script'
-  gem 'compass'
   gem 'uglifier'
 
   # JS niceties
