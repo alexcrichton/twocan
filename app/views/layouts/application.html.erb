@@ -13,6 +13,9 @@
     <%= csrf_meta_tags %>
     <%= favicon_link_tag %>
 
+    <script type='text/javascript'>
+      window.pusher_key = '<%= Pusher.key %>';
+    </script>
     <%= stylesheet_link_tag 'application' %>
     <%= yield :stylesheets %>
     <%= javascript_include_tag 'application' %>

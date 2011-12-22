@@ -1,7 +1,7 @@
 #= require pusher
 
 window.establish_channel = (container) ->
-  window.pusher ||= new Pusher('<%= Pusher.key %>')
+  window.pusher ||= new Pusher(window.pusher_key)
   channel = window.pusher.subscribe 'private-' + container.data('id')
 
   container.bind 'word-selected.crossword', (_, data) ->
