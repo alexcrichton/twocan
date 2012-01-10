@@ -4,7 +4,7 @@ group :useful do
   gem 'heroku', :require => false
 end
 
-gem 'rails', '3.2.0.rc1'
+gem 'rails', '3.2.0.rc2'
 
 gem 'bson_ext'
 gem 'mongoid'
@@ -14,8 +14,6 @@ group :assets do
   gem 'sass-rails', '~> 3.2.0'
   gem 'coffee-script'
   gem 'uglifier'
-
-  # JS niceties
   gem 'jquery-rails'
 end
 
