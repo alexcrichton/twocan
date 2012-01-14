@@ -12,7 +12,7 @@ gem 'mongoid'
 # Asset template engines
 group :assets do
   gem 'sass-rails', '~> 3.2.0'
-  gem 'coffee-script'
+  gem 'coffee-rails', '~> 3.2.0'
   gem 'uglifier'
   gem 'jquery-rails'
 end
