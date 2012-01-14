@@ -21,7 +21,7 @@ gem 'pjax_rails'
 
 gem 'pusher'
 
-gem 'oa-oauth'
+gem 'omniauth-facebook'
 gem 'cancan'
 gem 'devise'
 
